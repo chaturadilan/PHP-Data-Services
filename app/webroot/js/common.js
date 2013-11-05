@@ -24,3 +24,9 @@ $.noty.defaults = {
     },
     buttons: false // an array of buttons
 };
+
+
+$('.etabs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})

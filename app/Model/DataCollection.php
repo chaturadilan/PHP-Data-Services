@@ -1,12 +1,12 @@
 <?php
 App::uses('AppModel', 'Model');
 /**
- * DataProvider Model
+ * DataCollection Model
  *
- * @property SourceType $SourceType
+ * @property DataProvider $DataProvider
  * @property DataApp $DataApp
  */
-class DataProvider extends AppModel {
+class DataCollection extends AppModel {
 
 /**
  * Validation rules
@@ -14,7 +14,7 @@ class DataProvider extends AppModel {
  * @var array
  */
 	public $validate = array(
-		'name' => array(
+		'alias' => array(
 			'notEmpty' => array(
 				'rule' => array('notEmpty'),
 				//'message' => 'Your custom message here',
@@ -23,18 +23,18 @@ class DataProvider extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-		),
-		'params' => array(
-			'notEmpty' => array(
-				'rule' => array('notEmpty'),
+		),	
+		'data_provider_id' => array(
+			'numeric' => array(
+				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-		),
-		'source_type_id' => array(
+		),		
+		'data_app_id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				//'message' => 'Your custom message here',
@@ -54,24 +54,26 @@ class DataProvider extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
-		'SourceType' => array(
-			'className' => 'SourceType',
-			'foreignKey' => 'source_type_id',
+		'DataProvider' => array(
+			'className' => 'DataProvider',
+			'foreignKey' => 'data_provider_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
+		),
+		'DataApp' => array(
+			'className' => 'DataApp',
+			'foreignKey' => 'data_app_id',
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
 		)
 	);
-
-/**
- * hasMany associations
- *
- * @var array
- */
+	
 	public $hasMany = array(
-		'DataCollection' => array(
-			'className' => 'DataCollection',
-			'foreignKey' => 'data_provider_id',
+		'Method' => array(
+			'className' => 'Method',
+			'foreignKey' => 'data_collection_id',
 			'dependent' => false,
 			'conditions' => '',
 			'fields' => '',
@@ -83,5 +85,4 @@ class DataProvider extends AppModel {
 			'counterQuery' => ''
 		)
 	);
-
 }

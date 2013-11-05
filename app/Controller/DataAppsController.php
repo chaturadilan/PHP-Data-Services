@@ -1,39 +1,40 @@
 <?php
 App::uses('AppController', 'Controller');
 /**
- * SourceTypes Controller
+ * DataApps Controller
  *
- * @property SourceType $SourceType
+ * @property DataApp $DataApp
  * @property PaginatorComponent $Paginator
  */
-class SourceTypesController extends AppController {
+class DataAppsController extends AppController {
+	
 	
 	public function index() {		
-		$this->set('items', $this->SourceType->find('all'));		
+		$this->set('items', $this->DataApp->find('all'));		
 	}
 	
 	
 	public function form($id = null) {
 			
 		if ($this->request->is(array('post', 'put'))) {
-			if($id)	$this->SourceType->create();
+			if($id)	$this->DataApp->create();
 						
-			if ($this->SourceType->save($this->request->data)) {
+			if ($this->DataApp->save($this->request->data)) {
 				$this->Session->setFlash(__('The source type has been saved.'));
 				return $this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The source type could not be saved. Please, try again.'));
 			}
 		}else if($this->request->is('delete')){
-			$this->SourceType->id = $id;
-			if ($this->SourceType->delete()) {			
+			$this->DataApp->id = $id;
+			if ($this->DataApp->delete()) {			
 				
 			}
 		}
 					
-		if ($this->SourceType->exists($id)) {
-			$options = array('conditions' => array('SourceType.' . $this->SourceType->primaryKey => $id));
-			$this->request->data = $this->SourceType->find('first', $options);
+		if ($this->DataApp->exists($id)) {
+			$options = array('conditions' => array('DataApp.' . $this->DataApp->primaryKey => $id));
+			$this->request->data = $this->DataApp->find('first', $options);
 			$this->set('id', $id);
 		}else{
 			$this->set('id', null);
@@ -43,4 +44,5 @@ class SourceTypesController extends AppController {
 	
 	
 	
-}	
+
+}

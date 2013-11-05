@@ -1,7 +1,6 @@
 <div class="raw">
-	<h4>Data Providers</h4>
+	<h4>Data Collections &rarr; Data App: <?php $dataApp =  $this->Session->read('DataApp'); echo $dataApp['DataApp']['name']; ?></h4>
 </div>
-
 
 
 <div class="raw container top-bar">
@@ -13,34 +12,29 @@
 </div>
 
 
+
 <div class="raw">
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
 		<thead>
-			<tr>
-				<th>Id</th>
+			<tr>				
 				<th>Name</th>
+				<th>Alias</th>
 				<th>Description</th>
-				<th>Source Type</th>
-				<th>Init Params</th>
+				<th>Data Provider</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
 		<tbody>			
 			 <?php foreach ($items as $item): ?>
-			         <tr >
-						<td><?php echo $item['DataProvider']['id']; ?></td>
+			         <tr >						
+						<td><?php echo $item['DataCollection']['name']; ?></td>
+						<td><?php echo $item['DataCollection']['alias']; ?></td>
+						<td><?php echo $item['DataCollection']['description']; ?></td>
 						<td><?php echo $item['DataProvider']['name']; ?></td>
-						<td><?php echo $item['DataProvider']['description']; ?></td>
-						<td><?php echo $item['SourceType']['name']; ?></td>
-						<td><?php
-						$output = json_decode($item['DataProvider']['params']);
-						if($output->password){
-							$output->password = "xxxxx";
-						}						
-						 echo json_encode($output); ?></td>
-						<td class="center">							
-							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['DataProvider']['id']), array('escape' => false)); ?>
-							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['DataProvider']['id'], 'escape' => false)); ?>
+						<td class="center">
+							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array('controller' => 'methods', $item['DataCollection']['id']), array('escape' => false)); ?>							
+							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['DataCollection']['id']), array('escape' => false)); ?>
+							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['DataCollection']['id'], 'escape' => false)); ?>
 						</td>					
 					</tr>
 	         <?php endforeach; ?>	
@@ -48,9 +42,17 @@
 		</tbody>	
 	</table>
 </div>
+
+<div class="raw">
+	<ol class="breadcrumb">	
+	  <li><?php echo $this->Html->link('Data Apps',  array( 'controller' => 'data_apps')); ?></li>
+	  <li class="active">Data Collections</li>
+	</ol>
+</div>
+
+
 <?php $this -> startIfEmpty('script'); ?>
 <script>
-
 	$(".item-delete").click(function() {
 		var id = $(this).data("id");
 		noty({
@@ -77,8 +79,6 @@
 		});
 	});
 
-
-
 	/* Default class modification */
 	$.extend($.fn.dataTableExt.oStdClasses, {
 		"sSortAsc" : "header headerSortDown",
@@ -93,6 +93,5 @@
 		});
 	});
 
-	
 </script>
 <?php $this -> end(); ?>

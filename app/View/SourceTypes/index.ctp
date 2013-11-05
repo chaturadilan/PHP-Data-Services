@@ -1,3 +1,9 @@
+
+<div class="raw">
+	<h4>Source Types</h4>
+</div>
+
+
 <div class="raw container top-bar">
 	<div class="col-md-12">
 		<div class="col-md-1 pull-right">			
@@ -11,8 +17,7 @@
 <div class="raw">
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
 		<thead>
-			<tr>
-				<th>Id</th>
+			<tr>				
 				<th>Name</th>
 				<th>Description</th>
 				<th>Init Params</th>
@@ -21,8 +26,7 @@
 		</thead>
 		<tbody>			
 			 <?php foreach ($items as $item): ?>
-			         <tr >
-						<td><?php echo $item['SourceType']['id']; ?></td>
+			         <tr >						
 						<td><?php echo $item['SourceType']['name']; ?></td>
 						<td><?php echo $item['SourceType']['description']; ?></td>
 						<td><?php echo $item['SourceType']['init_params']; ?></td>

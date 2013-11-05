@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Bootstrap 101 Template</title>
+		<title>PHP Data Services</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<!-- Bootstrap -->
 		<?php echo $this->Html->css('bst/css/bootstrap.min.css', array('media' => 'screen')); ?>
@@ -24,6 +24,9 @@
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
 						<li class="active">						
+							<?php echo $this->Html->link('Data Apps',  array( 'controller' => 'data_apps',  'action' => 'index'),  array('escape' => false)); ?>
+						</li>
+						<li>						
 							<?php echo $this->Html->link('Source Types',  array( 'controller' => 'source_types',  'action' => 'index'),  array('escape' => false)); ?>
 						</li>
 						<li>
