@@ -36,7 +36,12 @@
      <?php echo $this -> Form -> input('data_provider_id', array('class' => 'form-control form-input', 'label' => false, 'div' => false, 'style' => 'width: 30%; display: inline')); ?>
     </div>
   </div>
-  
+   <div class="form-group">
+    <label class="col-sm-2 control-label">Database:</label>
+    <div class="col-sm-10">
+      <?php echo $this->Form->input('dbname', array('class' => 'form-control form-input', 'label' => false)); ?>
+    </div>
+  </div>
   
   
   

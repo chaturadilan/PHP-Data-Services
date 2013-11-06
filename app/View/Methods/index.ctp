@@ -25,7 +25,7 @@
 
 
 <div class="raw">
-	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example">
+	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="mainTable">
 		<thead>
 			<tr>				
 				<th>Name</th>
@@ -62,7 +62,40 @@
   	
   	
   </div>
-  <div class="tab-pane" id="crud-methods">...</div>
+  <div class="tab-pane" id="crud-methods">
+  	
+  	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered">
+		<thead>
+			<tr>				
+				<th>Table Name</th>
+				<th>Create</th>
+				<th>Retrieve</th>
+				<th>Update</th>
+				<th>Delete</th>
+			</tr>
+		</thead>
+		<tbody>			
+			 <?php foreach ($tableList as $table): ?>
+			         <tr >						
+						<td><?php echo $table; ?></td>
+						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="create" data-table="<?php echo $table;?>"></td>	
+						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="retrieve" data-table="<?php echo $table;?>"></td>	
+						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="update" data-table="<?php echo $table;?>"></td>	
+						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="delete" data-table="<?php echo $table;?>"></td>												
+					</tr>
+	         <?php endforeach; ?>	
+			
+		</tbody>	
+	</table>
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  	
+  </div>
   
 </div>
 </div>
@@ -116,7 +149,7 @@
 
 	/* Table initialisation */
 	$(document).ready(function() {
-		$('#example').dataTable({
+		$('#mainTable').dataTable({
 			"sDom" : "<'row'<'col-md-6'l><'ol-md-6'f>r>t<'row'<'span8'i><'span8'p>>"
 		});
 	});

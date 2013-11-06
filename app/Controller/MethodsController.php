@@ -1,5 +1,8 @@
 <?php
 App::uses('AppController', 'Controller');
+
+
+
 /**
  * Methods Controller
  *
@@ -9,7 +12,9 @@ App::uses('AppController', 'Controller');
 class MethodsController extends AppController {
 	
 	
-	public function index($id = null) {
+	public function index($id = null) {				
+		
+		
 		if($id){
 			$this->Session->write('DataCollection_id', $id);
 		}else{
@@ -17,11 +22,17 @@ class MethodsController extends AppController {
 		}
 		
 		
-		$dataCollection = $this->Method->DataCollection->findById($id);		
+		$dataCollection = $this->Method->DataCollection->find('first', array('conditions' => array('DataCollection.id' => $id), 'recursive' => 2));		
 		$this->Session->write('DataCollection', $dataCollection);	
 		
-				
-		$this->set('items', $this->Method->find('all', array('conditions' => array('DataCollection.id' => $id))));		
+		
+		
+		App::import('Vendor', 'Sources/'. $dataCollection['DataProvider']['SourceType']['name'] .'DataSource');		
+		$tableList = dataSource_loadTables($dataCollection['DataProvider']["params"],$dataCollection['DataCollection']['dbname'] );
+		$this->set('tableList', $tableList);
+		
+								
+		$this->set('items', $this->Method->find('all', array('conditions' => array('DataCollection.id' => $id))));			
 		
 	}
 	

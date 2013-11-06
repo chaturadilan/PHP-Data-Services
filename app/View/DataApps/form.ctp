@@ -36,6 +36,13 @@
 	</div>
 </div>
 
+<div class="form-group">
+	<label class="col-sm-2 control-label">Public API:</label>
+	<div class="col-sm-10">
+		<?php echo $this -> Form -> input('is_public', array('class' => 'form-control form-input', 'label' => false)); ?>
+	</div>
+</div>
+
 <hr>
 <div class="form-group">
 	<div class="col-sm-offset-2 col-sm-10">
