@@ -37,9 +37,17 @@
 </div>
 
 <div class="form-group">
-	<label class="col-sm-2 control-label">Public API:</label>
+	<label class="col-sm-2 control-label">Public:</label>
 	<div class="col-sm-10">
 		<?php echo $this -> Form -> input('is_public', array('class' => 'form-control form-input', 'label' => false)); ?>
+	</div>
+</div>
+
+
+<div class="form-group">
+	<label class="col-sm-2 control-label">Published:</label>
+	<div class="col-sm-10">
+		<?php echo $this -> Form -> input('is_published', array('class' => 'form-control form-input', 'label' => false)); ?>
 	</div>
 </div>
 

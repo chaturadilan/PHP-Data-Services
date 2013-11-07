@@ -29,10 +29,27 @@ class MethodsController extends AppController {
 		
 		App::import('Vendor', 'Sources/'. $dataCollection['DataProvider']['SourceType']['name'] .'DataSource');		
 		$tableList = dataSource_loadTables($dataCollection['DataProvider']["params"],$dataCollection['DataCollection']['dbname'] );
-		$this->set('tableList', $tableList);
+		$sendTableList = array();
 		
+		
+		$items  = $this->Method->find('all', array('conditions' => array('DataCollection.id' => $id)));
+		
+		
+		foreach($tableList as $key=>$table){
+				foreach($items as $item){
+					if($item['Method']['description'] == $table['name']){
+						if($item['Method']["method_type_id"] <= 4){						
+							$table[$item['Method']["command"]] = true;						
+						}
+					}
+									
+				}
+				
+				$tableList[$key] = $table;
+		}
 								
-		$this->set('items', $this->Method->find('all', array('conditions' => array('DataCollection.id' => $id))));			
+		$this->set('items', $items);		
+		$this->set('tableList', $tableList);		
 		
 	}
 	
@@ -64,6 +81,43 @@ class MethodsController extends AppController {
 		}	
 		
 					
+	}
+
+
+	public function updateCrud($id = null) {
+		
+		$params = $this->request->data;		
+		
+		if($params['value'] == 'true'){
+			$this->Method->create();
+			$values = array("name" => $params['table'] . "_" . $params['operation'], "description" => $params['table'], "command" => $params['operation'], "data_collection_id" => $params['collection']);
+			switch($params['operation']){
+				case "create":					
+					$values["method_type_id"] = "1";
+					$values["http_methods"] = "POST";
+					break;
+				case "retrieve":					
+					$values["method_type_id"] = "2";
+					$values["http_methods"] = "GET";
+					break;
+				case "update":					
+					$values["method_type_id"] = "3";
+					$values["http_methods"] = "PUT";
+					break;
+				case "delete":					
+					$values["method_type_id"] = "4";
+					$values["http_methods"] = "DELETE";
+					break;			
+			}			
+			$this->Method->save($values);
+		}else{
+			$method = $this->Method->find('first', array('conditions' => array('Method.method_type_id' => $params['opid'], 'Method.description' => $params['table'])));
+			$this->Method->delete($method['Method']['id']);
+		}
+		
+		
+		$this->autoRender = false;
+   		header('Content-Type: application/json');
 	}
 	
 

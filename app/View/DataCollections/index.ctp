@@ -22,6 +22,7 @@
 				<th>Description</th>
 				<th>Data Provider</th>
 				<th>Database</th>
+				<th>Published</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -33,6 +34,7 @@
 						<td><?php echo $item['DataCollection']['description']; ?></td>
 						<td><?php echo $item['DataProvider']['name']; ?></td>
 						<td><?php echo $item['DataCollection']['dbname']; ?></td>
+						<td class="text-center"><?php echo $item['DataCollection']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="center">
 							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array('controller' => 'methods', $item['DataCollection']['id']), array('escape' => false)); ?>							
 							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['DataCollection']['id']), array('escape' => false)); ?>

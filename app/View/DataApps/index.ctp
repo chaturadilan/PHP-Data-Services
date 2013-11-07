@@ -19,7 +19,8 @@
 				<th>Name</th>
 				<th>Alias</th>
 				<th>Description</th>
-				<th>Public API</th>
+				<th>Published</th>
+				<th>Public</th>
 				<th>Actions</th>				
 			</tr>
 		</thead>
@@ -29,6 +30,7 @@
 						<td><?php echo $item['DataApp']['name']; ?></td>
 						<td><?php echo $item['DataApp']['alias']; ?></td>				
 						<td><?php echo $item['DataApp']['description']; ?></td>	
+						<td class="text-center"><?php echo $item['DataApp']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="text-center"><?php echo $item['DataApp']['is_public']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>							
 						<td class="center">
 							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array( 'controller' => 'data_collections', $item['DataApp']['id']), array('escape' => false)); ?>						

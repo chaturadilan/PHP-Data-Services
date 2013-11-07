@@ -1,5 +1,9 @@
 <div class="raw">
-	<h4>Methods &rarr; Data Collection: <?php $dataApp =  $this->Session->read('DataCollection'); echo $dataApp['DataCollection']['name']; ?>  &rarr; Data App: <?php $dataApp =  $this->Session->read('DataApp'); echo $dataApp['DataApp']['name']; ?></h4>
+	<h4>Methods &rarr; Data Collection: <?php $dataApp = $this -> Session -> read('DataCollection');
+	echo $dataApp['DataCollection']['name'];
+ ?>  &rarr; Data App: <?php $dataApp = $this -> Session -> read('DataApp');
+	echo $dataApp['DataApp']['name'];
+ ?></h4>
 </div>
 
 
@@ -37,6 +41,7 @@
 		</thead>
 		<tbody>			
 			 <?php foreach ($items as $item): ?>
+			        <?php if($item['Method']['method_type_id'] == 5) : ?>
 			         <tr >						
 						<td><?php echo $item['DataCollection']['name']; ?></td>
 						<td><?php echo $item['DataCollection']['alias']; ?></td>
@@ -48,6 +53,7 @@
 							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['DataCollection']['id'], 'escape' => false)); ?>
 						</td>					
 					</tr>
+					<?php endif; ?>
 	         <?php endforeach; ?>	
 			
 		</tbody>	
@@ -75,13 +81,21 @@
 			</tr>
 		</thead>
 		<tbody>			
-			 <?php foreach ($tableList as $table): ?>
+			 <?php foreach ($tableList as $table): ?>			 		
 			         <tr >						
-						<td><?php echo $table; ?></td>
-						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="create" data-table="<?php echo $table;?>"></td>	
-						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="retrieve" data-table="<?php echo $table;?>"></td>	
-						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="update" data-table="<?php echo $table;?>"></td>	
-						<td class="text-center"><input type="checkbox" class="crud-op" data-operation="delete" data-table="<?php echo $table;?>"></td>												
+						<td><?php echo $table['name']; ?></td>
+						<td class="text-center"><input <?php if(isset($table['create'])) echo $table['create']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
+							echo $dataApp['DataCollection']['id'];
+ ?>" type="checkbox" class="crud-op" data-operation="create" data-opid="1" data-table="<?php echo $table['name']; ?>"></td>	
+						<td class="text-center"><input <?php if(isset($table['retrieve'])) echo $table['retrieve']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
+							echo $dataApp['DataCollection']['id'];
+ ?>" type="checkbox" class="crud-op" data-operation="retrieve" data-opid="2" data-table="<?php echo $table['name']; ?>"></td>	
+						<td class="text-center"><input <?php if(isset($table['update'])) echo $table['update']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
+							echo $dataApp['DataCollection']['id'];
+ ?>" type="checkbox" class="crud-op" data-operation="update" data-opid="3" data-table="<?php echo $table['name']; ?>"></td>	
+						<td class="text-center"><input <?php if(isset($table['delete'])) echo $table['delete']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
+							echo $dataApp['DataCollection']['id'];
+ ?>" type="checkbox" class="crud-op" data-operation="delete" data-opid="4" data-table="<?php echo $table['name']; ?>"></td>												
 					</tr>
 	         <?php endforeach; ?>	
 			
@@ -105,8 +119,8 @@
 
 <div class="raw">
 	<ol class="breadcrumb">	
-	  <li><?php echo $this->Html->link('Data Apps',  array( 'controller' => 'data_apps')); ?></li>
-	   <li><?php echo $this->Html->link('Data Collections',  array( 'controller' => 'data_collections')); ?></li>
+	  <li><?php echo $this -> Html -> link('Data Apps', array('controller' => 'data_apps')); ?></li>
+	   <li><?php echo $this -> Html -> link('Data Collections', array('controller' => 'data_collections')); ?></li>
 	  <li class="active">Methods</li>
 	</ol>
 </div>
@@ -152,6 +166,23 @@
 		$('#mainTable').dataTable({
 			"sDom" : "<'row'<'col-md-6'l><'ol-md-6'f>r>t<'row'<'span8'i><'span8'p>>"
 		});
+	});
+
+	$(".crud-op").click(function() {
+		var collection = $(this).data("collection");
+		var operation = $(this).data("operation");
+		var opid = $(this).data("opid");
+		var table = $(this).data("table");			
+		var value = $(this).is(':checked');
+		
+		$.ajax({
+			url : "../updateCrud/" + collection,
+			type : "put",
+			data: {collection: collection, operation: operation, opid: opid, table: table, value: value}
+		}).done(function() {
+			
+		});
+
 	});
 
 </script>
