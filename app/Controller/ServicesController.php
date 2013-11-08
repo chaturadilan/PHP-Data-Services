@@ -60,31 +60,153 @@ class ServicesController extends AppController {
 			}
 			
 			
-			if(!$dataMethod){				
-				$dataMethodResult = $this->Method->find('first', array('conditions' => array('Method.alias' => $alias, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
+			$httpMethod = null;
+				switch($_SERVER['REQUEST_METHOD']){
+					case "GET":
+						$httpMethod = "retrieve";
+						break;
+					case "POST":
+						$httpMethod = "create";
+						break;
+					case "PUT":
+						$httpMethod = "update";
+						break;
+					case "DELETE":
+						$httpMethod = "delete";
+						break;			
+			}
+			
+			
+			if(!$dataMethod){				 
+								
+				$dataMethodResult = $this->Method->find('first', array('conditions' => array('Method.alias' => $alias, 'Method.command' => $httpMethod, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
+							
+				if(!$dataMethodResult){
+					$this->setError("Invalid Operation", "808");
+					return;
+				}
+				
+				
+				$sourceName = $dataCollectionResult['DataProvider']['SourceType']['name'];
+				$provider = $dataCollectionResult['DataProvider']["params"];
+				$dBase = $dataCollectionResult['DataCollection']['dbname'];
+				
+				App::import('Vendor', 'Sources/'. $sourceName .'DataSource');	
+				
+							
+				
+				switch($dataMethodResult['Method']['command']){
+					case 'retrieve' :
+						
+						$sentParams = array();
+						$sentParams['table'] = $dataMethodResult['Method']['alias'];
+						if(isset($params['offset'])){
+							$sentParams['offset'] = $params['offset'];
+						}
+						if(isset($params['limit'])){
+							$sentParams['limit'] = $params['limit'];
+						}						
+						
+						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
+						echo json_encode($finalResult);
+						break;
+					
+					case 'create' :
+						$sentParams['table'] = $dataMethodResult['Method']['alias'];
+						if(isset($this->request->data)){
+								$sentParams['data'] = $this->request->data;
+						}		
+						
+											
+						$status = dataSource_createOP($provider,$dBase, $sentParams);
+						
+						if($status){
+							$this->setRes("Insert operation success!", "809");
+						}else{
+							$this->setError("Insert operation failed!", "810");
+						}
+						break;
+					default:
+						$this->setError("Invalid Operation", "808");
+						return;	
+				}
+				
+			
+			}else if(is_numeric($dataMethod)){
+				$dataMethodResult = $this->Method->find('first', array('conditions' => array('Method.alias' => $alias, 'Method.command' => $httpMethod, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
 							
 				if(!$dataMethodResult){
 					$this->setError("Invalid Operation", "807");
 					return;
 				}
 				
-				
 				$sourceName = $dataCollectionResult['DataProvider']['SourceType']['name'];
+				$provider = $dataCollectionResult['DataProvider']["params"];
+				$dBase = $dataCollectionResult['DataCollection']['dbname'];
 				
+				App::import('Vendor', 'Sources/'. $sourceName .'DataSource');	
 				
-				
-				
+								
+				switch($dataMethodResult['Method']['command']){
+					case 'retrieve' :
+						
+						$sentParams = array();
+						$sentParams['table'] = $dataMethodResult['Method']['alias'];
+						$sentParams['id'] = $dataMethod;
+						
+						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
+						echo json_encode($finalResult);
+						break;
+						
+					case 'update' :
+						
+						$sentParams = array();
+						$sentParams['table'] = $dataMethodResult['Method']['alias'];
+						$sentParams['id'] = $dataMethod;
+						if(isset($this->request->data)){
+								$sentParams['data'] = $this->request->data;
+						}			
+						
+						
+						$status = dataSource_updateOP($provider,$dBase, $sentParams);
+						
+						if($status){
+							$this->setRes("Update operation Success!", "809");
+						}else{
+							$this->setError("Update operation failed!", "810");
+						}
+						break;
+						
+					case 'delete' :
+						
+						$sentParams = array();
+						$sentParams['table'] = $dataMethodResult['Method']['alias'];
+						$sentParams['id'] = $dataMethod;						
+						
+						$status = dataSource_deleteOP($provider,$dBase, $sentParams);
+						
+						if($status){
+							$this->setRes("Delete operation success!", "809");
+						}else{
+							$this->setError("Delete operation failed!", "810");
+						}
+						break;		
+				}
 			
 			}
 			
-			//echo json_encode($dataMethodResult);
 			
 	}
 	
 	
 	private function setError($message, $code){
-		echo '{"message": "'. $message . '", "error_code": "'. $code . '"}';
+		echo '{"message": "'. $message . '", "code": "'. $code . '"}';
 		$this->response->statusCode(400);
+	}
+
+	private function setRes($message, $code){
+		echo '{"message": "'. $message . '", "code": "'. $code . '"}';
+		$this->response->statusCode(200);
 	}
 	
 

@@ -99,18 +99,7 @@ class MethodsController extends AppController {
 					}
 				}
 				
-				/*$command = $this->request->data['Method']['command'];
-				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
-				if($inputParams){
-					$inputParams = array_unique($inputParams);
-					$this->Method->MethodParam->deleteAll(array('MethodParam.method_id' => $id), false);
-					foreach ($inputParams as $inputParam){
-						print($inputParam);				
-						$this->Method->MethodParam->create();					
-						$this->Method->MethodParam->save(array('name' => $inputParam, 'description' => $inputParam,  'method_id' => $id ));					
-					}
-				}*/			
-				
+			
 				
 				return $this->redirect(array('action' => 'index'));
 			} else {
