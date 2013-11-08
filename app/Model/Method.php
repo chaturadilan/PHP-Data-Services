@@ -59,4 +59,20 @@ class Method extends AppModel {
 			'order' => ''
 		)
 	);
+	
+	public $hasMany = array(
+		'MethodParam' => array(
+			'className' => 'MethodParam',
+			'foreignKey' => 'method_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => '',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
 }

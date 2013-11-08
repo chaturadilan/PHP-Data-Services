@@ -32,10 +32,10 @@
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="mainTable">
 		<thead>
 			<tr>				
-				<th>Name</th>
-				<th>Alias</th>
+				<th>Name</th>				
 				<th>Description</th>
-				<th>Data Provider</th>
+				<th>HTTP Methods</th>
+				<th>Published</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -43,14 +43,14 @@
 			 <?php foreach ($items as $item): ?>
 			        <?php if($item['Method']['method_type_id'] == 5) : ?>
 			         <tr >						
-						<td><?php echo $item['DataCollection']['name']; ?></td>
-						<td><?php echo $item['DataCollection']['alias']; ?></td>
-						<td><?php echo $item['DataCollection']['description']; ?></td>
-						<td><?php echo $item['DataProvider']['name']; ?></td>
+						<td><?php echo $item['Method']['name']; ?></td>
+						<td><?php echo $item['Method']['description']; ?></td>
+						<td><?php echo $item['Method']['http_methods']; ?></td>							
+						<td class="text-center"><?php echo $item['Method']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="center">
-							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array('controller' => 'methods', $item['DataCollection']['id']), array('escape' => false)); ?>							
-							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['DataCollection']['id']), array('escape' => false)); ?>
-							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['DataCollection']['id'], 'escape' => false)); ?>
+							<?php echo $this -> Html -> link('<i class="fa fa-dot-circle-o"></i> Input Parameters &nbsp;', array('controller' => 'method_params', $item['Method']['id']), array('escape' => false)); ?>							
+							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['Method']['id']), array('escape' => false)); ?>
+							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['Method']['id'], 'escape' => false)); ?>
 						</td>					
 					</tr>
 					<?php endif; ?>

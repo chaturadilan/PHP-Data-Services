@@ -7,6 +7,7 @@
 		<?php echo $this->Html->css('bst/css/bootstrap.min.css', array('media' => 'screen')); ?>
 		<?php echo $this->Html->css('bst/css/bootstrap-theme.css', array('media' => 'screen')); ?>
 		<?php echo $this->Html->css('fnta/css/font-awesome.min.css', array('media' => 'screen')); ?>
+		<?php echo $this->Html->css('dlist/bootstrap-duallistbox.css', array('media' => 'screen')); ?>
 		
 		<?php echo $this->Html->css('styles.css', array('media' => 'screen')); ?>
 				
@@ -44,6 +45,7 @@
 		<?php echo $this->Html->script('bst/js/bootstrap.min.js'); ?>
 		<?php echo $this->Html->script('datat/jquery.dataTables.min.js'); ?>
 		<?php echo $this->Html->script('datat/bt.datatables.js'); ?>
+		<?php echo $this->Html->script('dlist/jquery.bootstrap-duallistbox.js'); ?>
 		
 		<?php echo $this->Html->script('noty/jquery.noty.js'); ?>
 		<?php echo $this->Html->script('noty/layouts/center.js'); ?>

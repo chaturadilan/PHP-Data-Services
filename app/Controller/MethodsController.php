@@ -25,8 +25,7 @@ class MethodsController extends AppController {
 		$dataCollection = $this->Method->DataCollection->find('first', array('conditions' => array('DataCollection.id' => $id), 'recursive' => 2));		
 		$this->Session->write('DataCollection', $dataCollection);	
 		
-		
-		
+				
 		App::import('Vendor', 'Sources/'. $dataCollection['DataProvider']['SourceType']['name'] .'DataSource');		
 		$tableList = dataSource_loadTables($dataCollection['DataProvider']["params"],$dataCollection['DataCollection']['dbname'] );
 		$sendTableList = array();
@@ -57,10 +56,57 @@ class MethodsController extends AppController {
 	public function form($id = null) {
 			
 		if ($this->request->is(array('post', 'put'))) {
-			if($id)	$this->Method->create();
+			if($this->request->data['Method']['http_methods'] != ""){
+				$this->request->data['Method']['http_methods'] = implode(",", $this->request->data['Method']['http_methods']);
+			}	
+			
+				
+			
+			
+			if(!$id) $this->Method->create();
+			
+			
+			
 						
 			if ($this->Method->save($this->request->data)) {
 				$this->Session->setFlash(__('The source type has been saved.'));
+				
+				if(!$id) $id = $this->Method->getLastInsertID();
+				$allIParams = $this->Method->MethodParam->find('all', array('conditions' => array('Method.id' => $id)));
+				$command = $this->request->data['Method']['command'];
+				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
+				
+				
+				
+				
+				foreach ($allIParams as $iParam){
+					$hasParam = false;	
+					foreach ($inputParams as $inputParam){
+						if($iParam['MethodParam']['name'] == $inputParam){
+							$hasParam = true;
+							break;
+						}
+					}
+					
+					if(!$hasParam){
+						
+					}
+					
+				}
+				
+				/*$command = $this->request->data['Method']['command'];
+				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
+				if($inputParams){
+					$inputParams = array_unique($inputParams);
+					$this->Method->MethodParam->deleteAll(array('MethodParam.method_id' => $id), false);
+					foreach ($inputParams as $inputParam){
+						print($inputParam);				
+						$this->Method->MethodParam->create();					
+						$this->Method->MethodParam->save(array('name' => $inputParam, 'description' => $inputParam,  'method_id' => $id ));					
+					}
+				}*/			
+				
+				
 				return $this->redirect(array('action' => 'index'));
 			} else {
 				$this->Session->setFlash(__('The source type could not be saved. Please, try again.'));
@@ -73,8 +119,9 @@ class MethodsController extends AppController {
 		}
 					
 		if ($this->Method->exists($id)) {
-			$options = array('conditions' => array('Method.' . $this->Method->primaryKey => $id));
+			$options = array('conditions' => array('Method.' . $this->Method->primaryKey => $id));			
 			$this->request->data = $this->Method->find('first', $options);
+			$this->request->data['Method']['http_methods'] = explode(",", $this->request->data['Method']['http_methods']);
 			$this->set('id', $id);
 		}else{
 			$this->set('id', null);
@@ -90,7 +137,7 @@ class MethodsController extends AppController {
 		
 		if($params['value'] == 'true'){
 			$this->Method->create();
-			$values = array("name" => $params['table'] . "_" . $params['operation'], "description" => $params['table'], "command" => $params['operation'], "data_collection_id" => $params['collection']);
+			$values = array("name" => $params['table'] . "_" . $params['operation'], "description" => $params['table'], "command" => $params['operation'], "is_published" => 1,  "data_collection_id" => $params['collection']);
 			switch($params['operation']){
 				case "create":					
 					$values["method_type_id"] = "1";
