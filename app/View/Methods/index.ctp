@@ -32,7 +32,8 @@
 	<table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="mainTable">
 		<thead>
 			<tr>				
-				<th>Name</th>				
+				<th>Name</th>
+				<th>Alias</th>						
 				<th>Description</th>
 				<th>HTTP Methods</th>
 				<th>Published</th>
@@ -44,6 +45,7 @@
 			        <?php if($item['Method']['method_type_id'] == 5) : ?>
 			         <tr >						
 						<td><?php echo $item['Method']['name']; ?></td>
+						<td><?php echo $item['Method']['alias']; ?></td>
 						<td><?php echo $item['Method']['description']; ?></td>
 						<td><?php echo $item['Method']['http_methods']; ?></td>							
 						<td class="text-center"><?php echo $item['Method']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>

@@ -7,101 +7,43 @@ App::uses('AppController', 'Controller');
  * @property PaginatorComponent $Paginator
  */
 class MethodParamsController extends AppController {
-
-/**
- * Components
- *
- * @var array
- */
-	public $components = array('Paginator');
-
-/**
- * index method
- *
- * @return void
- */
-	public function index() {
-		$this->MethodParam->recursive = 0;
-		$this->set('methodParams', $this->Paginator->paginate());
-	}
-
-/**
- * view method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
-		if (!$this->MethodParam->exists($id)) {
-			throw new NotFoundException(__('Invalid method param'));
+	
+	public function index($id = null) {		
+		if($id){
+			$this->Session->write('Method_id', $id);
+		}else{
+			$id = $this->Session->read('Method_id');
 		}
-		$options = array('conditions' => array('MethodParam.' . $this->MethodParam->primaryKey => $id));
-		$this->set('methodParam', $this->MethodParam->find('first', $options));
+		
+		
+		$method = $this->MethodParam->Method->findById($id);		
+		$this->Session->write('Method', $method);	
+		
+				
+		$this->set('items', $this->MethodParam->find('all', array('conditions' => array('Method.id' => $id))));			
 	}
-
-/**
- * add method
- *
- * @return void
- */
-	public function add() {
-		if ($this->request->is('post')) {
-			$this->MethodParam->create();
+	
+	
+	public function form($id = null) {
+			
+		if ($this->request->is(array('post', 'put'))) {			
+						
 			if ($this->MethodParam->save($this->request->data)) {
-				$this->Session->setFlash(__('The method param has been saved.'));
+				$this->Session->setFlash(__('The source type has been saved.'));
 				return $this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(__('The method param could not be saved. Please, try again.'));
+				$this->Session->setFlash(__('The source type could not be saved. Please, try again.'));
 			}
 		}
-		$methods = $this->MethodParam->Method->find('list');
-		$this->set(compact('methods'));
-	}
-
-/**
- * edit method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function edit($id = null) {
-		if (!$this->MethodParam->exists($id)) {
-			throw new NotFoundException(__('Invalid method param'));
-		}
-		if ($this->request->is(array('post', 'put'))) {
-			if ($this->MethodParam->save($this->request->data)) {
-				$this->Session->setFlash(__('The method param has been saved.'));
-				return $this->redirect(array('action' => 'index'));
-			} else {
-				$this->Session->setFlash(__('The method param could not be saved. Please, try again.'));
-			}
-		} else {
+					
+		if ($this->MethodParam->exists($id)) {
 			$options = array('conditions' => array('MethodParam.' . $this->MethodParam->primaryKey => $id));
 			$this->request->data = $this->MethodParam->find('first', $options);
-		}
-		$methods = $this->MethodParam->Method->find('list');
-		$this->set(compact('methods'));
+			$this->set('id', $id);
+		}else{
+			$this->set('id', null);
+		}	
+					
 	}
 
-/**
- * delete method
- *
- * @throws NotFoundException
- * @param string $id
- * @return void
- */
-	public function delete($id = null) {
-		$this->MethodParam->id = $id;
-		if (!$this->MethodParam->exists()) {
-			throw new NotFoundException(__('Invalid method param'));
-		}
-		$this->request->onlyAllow('post', 'delete');
-		if ($this->MethodParam->delete()) {
-			$this->Session->setFlash(__('The method param has been deleted.'));
-		} else {
-			$this->Session->setFlash(__('The method param could not be deleted. Please, try again.'));
-		}
-		return $this->redirect(array('action' => 'index'));
-	}}
+}

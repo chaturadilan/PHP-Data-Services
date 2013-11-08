@@ -18,6 +18,12 @@
 	</div>
 </div>
 <div class="form-group">
+	<label class="col-sm-2 control-label">Alias:</label>
+	<div class="col-sm-10">
+		<?php echo $this -> Form -> input('alias', array('class' => 'form-control form-input', 'label' => false)); ?>
+	</div>
+</div>
+<div class="form-group">
 	<label class="col-sm-2 control-label">Description:</label>
 	<div class="col-sm-10">
 		<?php echo $this -> Form -> textarea('description', array('class' => 'form-control form-input', 'label' => false, 'rows' => '3')); ?>

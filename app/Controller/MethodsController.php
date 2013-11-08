@@ -72,27 +72,32 @@ class MethodsController extends AppController {
 				$this->Session->setFlash(__('The source type has been saved.'));
 				
 				if(!$id) $id = $this->Method->getLastInsertID();
-				$allIParams = $this->Method->MethodParam->find('all', array('conditions' => array('Method.id' => $id)));
+				
 				$command = $this->request->data['Method']['command'];
 				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
+				$inputParams = array_unique($inputParams);
 				
+				foreach($inputParams as $inputParam){
+					$methodParam = $this->Method->MethodParam->findByName($inputParam);
+					if(!$methodParam){
+						$this->Method->MethodParam->create();					
+						$this->Method->MethodParam->save(array('name' => $inputParam, 'description' => $inputParam,  'method_id' => $id ));	
+					}
+				}	
 				
-				
-				
-				/*foreach ($allIParams as $iParam){
-					$hasParam = false;	
-					foreach ($inputParams as $inputParam){
+				$allIParams = $this->Method->MethodParam->find('all', array('conditions' => array('Method.id' => $id)));
+				foreach ($allIParams as $iParam){
+					$toDelete = true;
+					foreach($inputParams as $inputParam){
 						if($iParam['MethodParam']['name'] == $inputParam){
-							$hasParam = true;
-							break;
+							$toDelete = false;
 						}
 					}
 					
-					if(!$hasParam){						
-						
+					if($toDelete){
+						$this->Method->MethodParam->delete($iParam['MethodParam']['id']);
 					}
-					
-				}*/
+				}
 				
 				/*$command = $this->request->data['Method']['command'];
 				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
@@ -137,7 +142,7 @@ class MethodsController extends AppController {
 		
 		if($params['value'] == 'true'){
 			$this->Method->create();
-			$values = array("name" => $params['table'] . "_" . $params['operation'], "description" => $params['table'], "command" => $params['operation'], "is_published" => 1,  "data_collection_id" => $params['collection']);
+			$values = array("name" => $params['table'] . "_" . $params['operation'], "description" => $params['table'],  "alias" => $params['table'], "command" => $params['operation'], "is_published" => 1,  "data_collection_id" => $params['collection']);
 			switch($params['operation']){
 				case "create":					
 					$values["method_type_id"] = "1";
@@ -158,7 +163,7 @@ class MethodsController extends AppController {
 			}			
 			$this->Method->save($values);
 		}else{
-			$method = $this->Method->find('first', array('conditions' => array('Method.method_type_id' => $params['opid'], 'Method.description' => $params['table'])));
+			$method = $this->Method->find('first', array('conditions' => array('Method.method_type_id' => $params['opid'], 'Method.alias' => $params['table'])));
 			$this->Method->delete($method['Method']['id']);
 		}
 		
