@@ -79,7 +79,7 @@ class MethodsController extends AppController {
 				
 				
 				
-				foreach ($allIParams as $iParam){
+				/*foreach ($allIParams as $iParam){
 					$hasParam = false;	
 					foreach ($inputParams as $inputParam){
 						if($iParam['MethodParam']['name'] == $inputParam){
@@ -88,11 +88,11 @@ class MethodsController extends AppController {
 						}
 					}
 					
-					if(!$hasParam){
+					if(!$hasParam){						
 						
 					}
 					
-				}
+				}*/
 				
 				/*$command = $this->request->data['Method']['command'];
 				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
