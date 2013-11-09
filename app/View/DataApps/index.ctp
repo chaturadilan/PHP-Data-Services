@@ -33,7 +33,8 @@
 						<td class="text-center"><?php echo $item['DataApp']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="text-center"><?php echo $item['DataApp']['is_public']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>							
 						<td class="center">
-							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array( 'controller' => 'data_collections', $item['DataApp']['id']), array('escape' => false)); ?>						
+							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array( 'controller' => 'data_collections', $item['DataApp']['id']), array('escape' => false)); ?>
+							<?php echo $this -> Html -> link('<i class="fa fa-gavel"></i> WADL &nbsp;', '/services/wadl/' . $item['DataApp']['alias'] , array('escape' => false, 'target' => '_blank')); ?>						
 							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['DataApp']['id']), array('escape' => false)); ?>
 							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['DataApp']['id'], 'escape' => false)); ?>
 						</td>					

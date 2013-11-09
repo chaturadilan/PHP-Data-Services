@@ -1,6 +1,6 @@
 <div class="raw">
-	<h4>Methods &rarr; Data Collection: <?php $dataApp = $this -> Session -> read('DataCollection');
-	echo $dataApp['DataCollection']['name'];
+	<h4>Methods &rarr; Data Collection: <?php $dataCollection = $this -> Session -> read('DataCollection');
+	echo $dataCollection['DataCollection']['name'];
  ?>  &rarr; Data App: <?php $dataApp = $this -> Session -> read('DataApp');
 	echo $dataApp['DataApp']['name'];
  ?></h4>
@@ -50,8 +50,9 @@
 						<td><?php echo $item['Method']['http_methods']; ?></td>							
 						<td class="text-center"><?php echo $item['Method']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="center">
-							<?php echo $this -> Html -> link('<i class="fa fa-dot-circle-o"></i> Input Parameters &nbsp;', array('controller' => 'method_params', $item['Method']['id']), array('escape' => false)); ?>							
-							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['Method']['id']), array('escape' => false)); ?>
+							<?php echo $this -> Html -> link('<i class="fa fa-dot-circle-o"></i> Input Parameters &nbsp;', array('controller' => 'method_params', $item['Method']['id']), array('escape' => false)); ?>	
+							<?php echo $this -> Html -> link('<i class="fa fa-magic"></i> Test &nbsp;', '/services/data/'. $dataApp['DataApp']['alias'] . "/" . $dataCollection['DataCollection']['alias'] . "/" . $item['Method']['alias'] . "/" . $item['Method']['name'] . "?secret=" . $dataApp['DataApp']['secret'], array('escape' => false, 'target' => '_blank')); ?>						
+							<?php echo $this -> Html -> link('<i class="fa fa-edit"></i> Edit &nbsp;', array('action' => 'form', $item['Method']['id']), array('escape' => false)); ?> 
 							<?php echo $this -> Html -> link('<i class="fa fa-times"></i> Delete &nbsp;', array('action' => '#'), array('class' => 'item-delete', 'data-id' => $item['Method']['id'], 'escape' => false)); ?>
 						</td>					
 					</tr>
@@ -80,24 +81,25 @@
 				<th>Retrieve</th>
 				<th>Update</th>
 				<th>Delete</th>
+				<th class="text-center">Test</th>
 			</tr>
 		</thead>
 		<tbody>			
 			 <?php foreach ($tableList as $table): ?>			 		
 			         <tr >						
 						<td><?php echo $table['name']; ?></td>
-						<td class="text-center"><input <?php if(isset($table['create'])) echo $table['create']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
-							echo $dataApp['DataCollection']['id'];
+						<td class="text-center"><input <?php if(isset($table['create'])) echo $table['create']? "checked" : "" ?> data-collection="<?php echo $dataCollection['DataCollection']['id'];
  ?>" type="checkbox" class="crud-op" data-operation="create" data-opid="1" data-table="<?php echo $table['name']; ?>"></td>	
-						<td class="text-center"><input <?php if(isset($table['retrieve'])) echo $table['retrieve']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
-							echo $dataApp['DataCollection']['id'];
+						<td class="text-center"><input <?php if(isset($table['retrieve'])) echo $table['retrieve']? "checked" : "" ?> data-collection="<?php echo $dataCollection['DataCollection']['id'];
  ?>" type="checkbox" class="crud-op" data-operation="retrieve" data-opid="2" data-table="<?php echo $table['name']; ?>"></td>	
-						<td class="text-center"><input <?php if(isset($table['update'])) echo $table['update']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
-							echo $dataApp['DataCollection']['id'];
+						<td class="text-center"><input <?php if(isset($table['update'])) echo $table['update']? "checked" : "" ?> data-collection="<?php echo $dataCollection['DataCollection']['id'];
  ?>" type="checkbox" class="crud-op" data-operation="update" data-opid="3" data-table="<?php echo $table['name']; ?>"></td>	
-						<td class="text-center"><input <?php if(isset($table['delete'])) echo $table['delete']? "checked" : "" ?> data-collection="<?php $dataApp = $this -> Session -> read('DataCollection');
-							echo $dataApp['DataCollection']['id'];
- ?>" type="checkbox" class="crud-op" data-operation="delete" data-opid="4" data-table="<?php echo $table['name']; ?>"></td>												
+						<td class="text-center"><input <?php if(isset($table['delete'])) echo $table['delete']? "checked" : "" ?> data-collection="<?php echo $dataCollection['DataCollection']['id'];
+ ?>" type="checkbox" class="crud-op" data-operation="delete" data-opid="4" data-table="<?php echo $table['name']; ?>"></td>		
+ 						<td class="text-center">
+ 							<?php echo $this -> Html -> link('<i class="fa fa-magic"></i> Test &nbsp;', '/services/data/'. $dataApp['DataApp']['alias'] . "/" . $dataCollection['DataCollection']['alias'] . "/"  . $table['name'] . "?secret=" . $dataApp['DataApp']['secret'], array('escape' => false, 'target' => '_blank')); ?>						
+
+ 						</td>										
 					</tr>
 	         <?php endforeach; ?>	
 			

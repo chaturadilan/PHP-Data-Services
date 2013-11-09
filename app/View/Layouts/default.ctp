@@ -57,7 +57,7 @@
 		
 		<footer>
 			<div class="raw text-center">
-				Copyright (c) <a href="https://github.com/chaturadilan">chaturadilan</a>
+				Copyright &copy; 2013-<?php echo date("Y"); ?> <a href="https://github.com/chaturadilan">chaturadilan</a>
 			</div>
 		</footer>
 		
