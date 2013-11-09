@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 08, 2013 at 02:38 PM
+-- Generation Time: Nov 09, 2013 at 05:14 PM
 -- Server version: 5.6.12
 -- PHP Version: 5.5.3
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `data_collections` (
   `data_app_id` int(11) NOT NULL,
   `is_published` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`,`data_app_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Dumping data for table `data_collections`
@@ -71,7 +71,8 @@ CREATE TABLE IF NOT EXISTS `data_collections` (
 INSERT INTO `data_collections` (`id`, `name`, `alias`, `description`, `data_provider_id`, `dbname`, `data_app_id`, `is_published`) VALUES
 (1, 'CD Collections', 'cd-col', 'CD COL', 1, 'cdcol', 1, 1),
 (2, 'T', 'rw', 'ffff', 1, '0', 3, 0),
-(3, 'Notification', 'notification', 'Notification Table', 1, 'wso2mobile-mdm', 1, 1);
+(3, 'Notification', 'notification', 'Notification Table', 1, 'wso2mobile-mdm', 1, 0),
+(4, 'Logs', 'logs', 'MDM-Logs', 1, 'mdm-log', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `data_providers` (
 --
 
 INSERT INTO `data_providers` (`id`, `name`, `description`, `params`, `source_type_id`) VALUES
-(1, 'Localhost', 'My Localhost', '{\r\n   "host": "localhost",\r\n   "port": "3306", \r\n   "username": "root",\r\n   "password": ""  \r\n} ', 1);
+(1, 'Localhost MySQL', 'My Localhost', '{\r\n   "host": "localhost",\r\n   "port": "3306", \r\n   "username": "root",\r\n   "password": ""  \r\n} ', 1);
 
 -- --------------------------------------------------------
 
@@ -112,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `methods` (
   `method_type_id` int(11) NOT NULL,
   `is_published` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`,`data_collection_id`,`method_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=47 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=63 ;
 
 --
 -- Dumping data for table `methods`
@@ -120,9 +121,20 @@ CREATE TABLE IF NOT EXISTS `methods` (
 
 INSERT INTO `methods` (`id`, `name`, `alias`, `description`, `command`, `http_methods`, `data_collection_id`, `method_type_id`, `is_published`) VALUES
 (43, 'cds_create', 'cds', 'cds', 'create', 'POST', 1, 1, 1),
-(44, 'cds_update', 'cds', 'cds', 'update', 'PUT', 1, 3, 1),
-(45, 'getAllDevices', 'devices', 'test', 'SELECT * FROM test WHERE a = {{name}}', 'GET', 1, 5, 1),
-(46, 'cds_retrieve', 'cds', 'cds', 'retrieve', 'GET', 1, 2, 1);
+(45, 'getAllCds', 'cds', 'test', 'SELECT * FROM cds WHERE jahr = ''{{name}}''', 'GET', 1, 5, 1),
+(48, 'devices_retrieve', 'devices', 'devices', 'retrieve', 'GET', 3, 2, 1),
+(49, 'features_retrieve', 'features', 'features', 'retrieve', 'GET', 3, 2, 1),
+(50, 'featuretype_retrieve', 'featuretype', 'featuretype', 'retrieve', 'GET', 3, 2, 1),
+(51, 'platforms_retrieve', 'platforms', 'platforms', 'retrieve', 'GET', 3, 2, 1),
+(54, 'featuregroup_retrieve', 'featuregroup', 'featuregroup', 'retrieve', 'GET', 3, 2, 1),
+(55, 'cds_delete', 'cds', 'cds', 'delete', 'DELETE', 1, 4, 1),
+(56, 'Notifications_create', 'Notifications', 'Notifications', 'create', 'POST', 4, 1, 1),
+(57, 'Notifications_retrieve', 'Notifications', 'Notifications', 'retrieve', 'GET', 4, 2, 1),
+(58, 'Notifications_update', 'Notifications', 'Notifications', 'update', 'PUT', 4, 3, 1),
+(59, 'Notifications_delete', 'Notifications', 'Notifications', 'delete', 'DELETE', 4, 4, 1),
+(60, 'cds_retrieve', 'cds', 'cds', 'retrieve', 'GET', 1, 2, 1),
+(61, 'insertCD', 'cbs', 'insert a CD', 'INSERT INTO `cdcol`.`cds` (`titel`, `interpret`, `jahr`, `id`) VALUES ({{title}}, {{title2}}, {{title3}},   NULL);', 'GET,POST', 1, 5, 1),
+(62, 'permissions_retrieve', 'permissions', 'permissions', 'retrieve', 'GET', 3, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -139,14 +151,17 @@ CREATE TABLE IF NOT EXISTS `method_params` (
   `expression` text,
   `method_id` int(11) NOT NULL,
   PRIMARY KEY (`id`,`method_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=24 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
 
 --
 -- Dumping data for table `method_params`
 --
 
 INSERT INTO `method_params` (`id`, `name`, `description`, `validation`, `is_required`, `expression`, `method_id`) VALUES
-(23, 'name', 'name', 'none', 0, NULL, 45);
+(23, 'name', 'This field should be a numeric field', 'numeric', 1, '/^[a-z0-9]+$/i', 45),
+(24, 'title', 'title', 'none', 1, '', 61),
+(25, 'title2', 'title2', 'none', 1, '', 61),
+(26, 'title3', 'title3', 'none', 0, '', 61);
 
 -- --------------------------------------------------------
 
@@ -213,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
-(1, 'admin', 'ed1249a45a834f1028660e072e23a54b53f2fd16', 'admin');
+(1, 'admin', '5ecbc92d0624d99a12072c105f924834c6349378', 'admin');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

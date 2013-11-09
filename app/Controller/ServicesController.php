@@ -455,7 +455,7 @@ class ServicesController extends AppController {
 		$xmlString .= '</application>';
 		
 		echo $xmlString ;
-		//print_r($dataApp);
+		//print_r($dataApp); 
 	}
 	
 	
