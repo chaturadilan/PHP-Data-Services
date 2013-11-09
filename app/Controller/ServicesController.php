@@ -351,6 +351,7 @@ class ServicesController extends AppController {
 		$this->RequestHandler->respondAs("text/xml");
 		
 		if(!$dataApp){
+				$this->RequestHandler->respondAs("application/json");	
 				$this->setError("Data App is required", "800");
 				return;
 		}
@@ -363,11 +364,13 @@ class ServicesController extends AppController {
 		
 		
 		if(!$dataApp['DataApp']['is_public']){
+				$this->RequestHandler->respondAs("application/json");	
 				$this->setError("Data App is private", "803");
 				return;
 		}
 						
 		if(!$dataApp['DataApp']['is_published']){
+				$this->RequestHandler->respondAs("application/json");	
 				$this->setError("Data App is not published", "804");
 				return;
 		}
