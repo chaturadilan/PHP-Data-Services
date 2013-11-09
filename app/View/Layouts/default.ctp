@@ -23,23 +23,43 @@
 
 				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					
+					<?php if($this->Session->read('Auth.User.role')) : ?>
 					<ul class="nav navbar-nav">
-						<li class="active">						
+												
+						<li class="<?php echo $this->params['controller'] == "data_apps"? "active" : "" ?>">						
 							<?php echo $this->Html->link('Data Apps',  array( 'controller' => 'data_apps',  'action' => 'index'),  array('escape' => false)); ?>
 						</li>
-						<li>						
+						<li class="<?php echo $this->params['controller'] == "data_providers"? "active" : "" ?>">
+							<?php echo $this->Html->link('Data Providers',  array( 'controller' => 'data_providers',  'action' => 'index'),  array('escape' => false)); ?>
+						</li>		
+						<li class="<?php echo $this->params['controller'] == "users"? "active" : "" ?>">						
+							<?php echo $this->Html->link('Users',  array( 'controller' => 'users',  'action' => 'index'),  array('escape' => false)); ?>
+						</li>
+						<li class="<?php echo $this->params['controller'] == "source_types"? "active" : "" ?>">						
 							<?php echo $this->Html->link('Source Types',  array( 'controller' => 'source_types',  'action' => 'index'),  array('escape' => false)); ?>
 						</li>
-						<li>
-							<?php echo $this->Html->link('Data Providers',  array( 'controller' => 'data_providers',  'action' => 'index'),  array('escape' => false)); ?>
-						</li>					
-					</ul>					
+									
+					</ul>	
+					
+					
+					<ul class="nav navbar-nav navbar-right">
+					      <li><?php echo $this->Html->link('Logout',  array( 'controller' => 'users',  'action' => 'logout'),  array('escape' => false)); ?></li>					     
+					 </ul>
+					<?php endif; ?>
+									
 			</nav>
 
 		</header>
 		<div class="container">
 			<?php echo $this->fetch('content'); ?>
 		</div>
+		
+		<footer>
+			<div class="raw text-center">
+				Copyright (c) <a href="https://github.com/chaturadilan">chaturadilan</a>
+			</div>
+		</footer>
 		
 		<?php echo $this->Html->script('jqe/jquery.min.js'); ?>
 		<?php echo $this->Html->script('bst/js/bootstrap.min.js'); ?>

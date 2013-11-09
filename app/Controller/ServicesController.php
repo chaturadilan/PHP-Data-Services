@@ -5,7 +5,10 @@ App::uses('AppController', 'Controller');
 class ServicesController extends AppController {
 		
 	 var $components = array('RequestHandler');	
-			
+	
+	public function beforeFilter() {
+        $this->Auth->allow('data');
+    }		
 	
 	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null) {
 			$this->autoRender = false;
