@@ -144,5 +144,47 @@ function dataSource_deleteOP($provider, $dbase, $params = null) {
 }
 
 
+function dataSource_customOP($provider, $dbase, $params = null) {
+		
+	
+	$dbParams = json_decode($provider);	
+	$mysqli = new mysqli($dbParams -> host, $dbParams -> username, $dbParams -> password, $dbase, $dbParams -> port);
+	
+	
+	
+	if (mysqli_connect_errno($mysqli)) {	
+		return false;
+	}else{
+		
+		$paramsData = $params['data'];	
+		
+		$queryString = $params['command'];	
+		
+		
+		foreach($paramsData as $key => $paramData){
+			$queryString = str_replace("{{" . $mysqli->real_escape_string($key) . "}}", $mysqli->real_escape_string($paramData), $queryString);
+		}	
+		
+						
+		$result = $mysqli->query($queryString);
+		
+		if(is_object($result)){
+			$finalResult = array();
+			while($row = $result->fetch_array(MYSQLI_ASSOC)){
+				$finalResult[] = $row;
+			}
+			return $finalResult;
+		}else{
+			return $result;
+		}
+		
+		
+		
+	}	
+	mysqli_close($mysqli);
+}
+
+
+
 
 ?>

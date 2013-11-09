@@ -79,7 +79,7 @@ class ServicesController extends AppController {
 			
 			if(!$dataMethod){				 
 								
-				$dataMethodResult = $this->Method->find('first', array('conditions' => array('Method.alias' => $alias, 'Method.command' => $httpMethod, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
+				$dataMethodResult = $this->Method->find('first', array('conditions' => array( 'DataCollection.alias' => $dataCollectionResult['DataCollection']['alias'] , 'Method.alias' => $alias, 'Method.command' => $httpMethod, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
 							
 				if(!$dataMethodResult){
 					$this->setError("Invalid Operation", "808");
@@ -133,7 +133,7 @@ class ServicesController extends AppController {
 				
 			
 			}else if(is_numeric($dataMethod)){
-				$dataMethodResult = $this->Method->find('first', array('conditions' => array('Method.alias' => $alias, 'Method.command' => $httpMethod, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
+				$dataMethodResult = $this->Method->find('first', array('conditions' => array( 'DataCollection.alias' => $dataCollectionResult['DataCollection']['alias'], 'Method.alias' => $alias, 'Method.command' => $httpMethod, 'Method.http_methods' => strtoupper($_SERVER['REQUEST_METHOD']))));
 							
 				if(!$dataMethodResult){
 					$this->setError("Invalid Operation", "807");
@@ -193,6 +193,146 @@ class ServicesController extends AppController {
 						break;		
 				}
 			
+			}else{
+				$dataMethodResult = $this->Method->find('first', array('conditions' => array( 'DataCollection.alias' => $dataCollectionResult['DataCollection']['alias'], 'Method.alias' => $alias, 'Method.name' => $dataMethod)));
+				
+				if(!$dataMethodResult){
+					$this->setError("Invalid Operation", "807");
+					return;
+				}
+				
+				if(!$dataMethodResult['Method']['is_published']){
+					$this->setError("Invalid Operation", "807");
+					return;
+				}
+				
+				$sentParams['data'] = array();
+				
+				if($dataMethodResult['Method']['http_methods']){
+					$http_methods = explode(",", $dataMethodResult['Method']['http_methods']);
+					
+					
+					if(!is_numeric(array_search(strtoupper($_SERVER['REQUEST_METHOD']), $http_methods))){
+						$this->setError("Invalid HTTP Method", "812");
+						return;
+					}
+					
+					if(strtoupper($_SERVER['REQUEST_METHOD']) == 'GET'){
+						$sentParams['data'] = $this->request->query;
+					}else{
+						$sentParams['data'] = array_merge($this->request->query, $this->request->data);
+					}
+					
+					
+					if($dataMethodResult['Method']['command']){
+						$sentParams['command'] = $dataMethodResult['Method']['command'];
+					}
+					
+					
+					$validatedInputs = array();	
+					$validated = true;
+					$validateMessages = array();	
+					
+					
+					$methodParams = $dataMethodResult['MethodParam'];
+					
+					foreach($methodParams as $methodParam){					
+						if(array_key_exists($methodParam['name'], $sentParams['data'])){
+							
+							if($methodParam['is_required'] && $sentParams['data'][$methodParam['name']] == ""){
+								$validated = false;
+								$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'required' , 'message' => $methodParam['name'] . " is required");								
+							}
+							
+							if($methodParam['validation'] == "email"){
+								if(!filter_var($sentParams['data'][$methodParam['name']], FILTER_VALIDATE_EMAIL)) {
+     									$validated = false;
+										$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'email' , 'message' => $methodParam['description']); 
+										continue;
+								}
+							}
+							
+							if($methodParam['validation'] == "url"){
+								if(!filter_var($sentParams['data'][$methodParam['name']], FILTER_VALIDATE_URL)) {
+     									$validated = false;
+										$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'url' , 'message' => $methodParam['description']); 
+										continue;
+								}				
+								
+							}
+							
+							if($methodParam['validation'] == "phone"){
+								if(!preg_match("/^\+?(\(?[0-9]{3}\)?|[0-9]{3})[-\.\s]?[0-9]{3}[-\.\s]?[0-9]{4}$/", $sentParams['data'][$methodParam['name']])) {
+									 $validated = false;
+										$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'phone' , 'message' => $methodParam['description']);
+										continue; 
+								}								
+							}
+							
+							if($methodParam['validation'] == "numeric"){
+								if(!is_numeric($sentParams['data'][$methodParam['name']])) {
+									 $validated = false;
+									$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'numeric' , 'message' => $methodParam['description']); 
+									continue;
+								}								
+							}
+							
+							if($methodParam['validation'] == "alphanumeric"){
+								if(!preg_match("/^[a-z0-9]+$/i", $sentParams['data'][$methodParam['name']])) {
+									 $validated = false;
+										$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'alphanumeric' , 'message' => $methodParam['description']); 
+										continue;
+								}								
+							}
+							
+							if($methodParam['validation'] == "custom"){
+								if(!preg_match($methodParam['expression'], $sentParams['data'][$methodParam['name']])) {
+									 $validated = false;
+										$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'custom' , 'message' => $methodParam['description']); 
+										continue;
+								}								
+							}
+																										
+							$validatedInputs[] = array($methodParam['name'] => $sentParams['data'][$methodParam['name']]);
+						}else{
+							if($methodParam['is_required']){
+								$validated = false;
+								$validateMessages[] = array('field' => $methodParam['name'], 'code' => 'required' , 'message' => $methodParam['name'] . " is required");								
+							}
+						}
+					}
+
+					if(!$validated)	{
+						$this->setErrorWithData("Input Validation Failed", "814", $validateMessages);						
+						return;
+					}else{
+						$sourceName = $dataCollectionResult['DataProvider']['SourceType']['name'];
+						$provider = $dataCollectionResult['DataProvider']["params"];
+						$dBase = $dataCollectionResult['DataCollection']['dbname'];	
+							
+						App::import('Vendor', 'Sources/'. $sourceName .'DataSource');	
+						$result = dataSource_customOP($provider,$dBase, $sentParams);
+						if(is_array($result)){
+							echo json_encode($result);
+						}else{
+							if($result){
+							$this->setRes("Operation success!", "809");
+							}else{
+								$this->setError("Operation failed!", "810");
+							}
+						}
+						
+					}
+												
+					
+					
+				}else{
+					$this->setError("No HTTP Method Defined", "811");
+					return;
+				}
+				
+				
+				//$result = dataSource_customOP($provider,$dBase, $sentParams);
 			}
 			
 			
@@ -201,6 +341,12 @@ class ServicesController extends AppController {
 	
 	private function setError($message, $code){
 		echo '{"message": "'. $message . '", "code": "'. $code . '"}';
+		$this->response->statusCode(400);
+	}
+	
+	private function setErrorWithData($message, $code, $data){
+		$messageE = array("message" => $message, 'code' => $code, 'data' => $data);
+		echo json_encode($messageE);
 		$this->response->statusCode(400);
 	}
 

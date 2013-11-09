@@ -29,7 +29,7 @@
   <div class="form-group">
     <label class="col-sm-2 control-label">Validation Type:</label>
     <div class="col-sm-10">
-  		<?php echo $this -> Form -> select('validation', array(array("none" => "None", "phone" => "Phone", "url" => "URL", "email" => "Email", "custom" => "Custom")), array("empty" => false, 'label' => false)); ?>
+  		<?php echo $this -> Form -> select('validation', array(array("none" => "None", "phone" => "Phone", "alphanumeric" => "Alpha Numeric", "numeric" => "Numeric", "url" => "URL", "email" => "Email", "custom" => "Custom")), array("empty" => false, 'label' => false)); ?>
     </div>
   </div>
   
