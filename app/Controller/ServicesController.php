@@ -7,7 +7,7 @@ class ServicesController extends AppController {
 	 var $components = array('RequestHandler');	
 	
 	public function beforeFilter() {
-        $this->Auth->allow('data', "wadl", 'api');
+        $this->Auth->allow('data', "wadl_private", "wadl", 'api');
     }		
 	
 	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null, $isApi = false) {
@@ -364,7 +364,7 @@ class ServicesController extends AppController {
 
 
 
-	public function wadl($dataApp){
+	public function wadl_private($dataApp){
 		
 		$this->autoRender = false;
 		$this->RequestHandler->respondAs("application/xml");
@@ -496,7 +496,7 @@ class ServicesController extends AppController {
 	public function api($dataApp = null, $version = null, $dataCollection = null, $alias = null, $dataMethod = null) {
 				
 			$this->autoRender = false;
-			//$this->RequestHandler->respondAs(" application/json");	
+			$this->RequestHandler->respondAs(" application/json");	
 			
 				
 			if(!$dataApp){
@@ -567,6 +567,148 @@ class ServicesController extends AppController {
 			$this->data($dataApp, $dataCollection, $alias, $dataMethod, true);
 	
 	}
+	
+	
+	
+	public function wadl($dataApp = null, $version = null){
+		
+		$this->autoRender = false;
+		$this->RequestHandler->respondAs("application/xml");
+		
+		if(!$dataApp){
+				$this->RequestHandler->respondAs("application/json");	
+				$this->setError("Data App is required", "800");
+				return;
+		}
+		
+		if(!$version){
+				$this->RequestHandler->respondAs("application/json");	
+				$this->setError("Data Version is required", "820");
+				return;
+		}
+		
+						
+		
+		$this->loadModel('DataApi');
+		$this->loadModel('Method');
+		$dataApp = $this->DataApi->find('first', array('recursive' => 3,  'conditions' => array('DataApp.alias' => $dataApp, 'DataApi.name' => $version)));
+		
+		
+		if(!$dataApp['DataApp']['is_public']){
+				$this->RequestHandler->respondAs("application/json");	
+				$this->setError("Data App is private", "803");
+				return;
+		}
+						
+		if(!$dataApp['DataApp']['is_published']){
+				$this->RequestHandler->respondAs("application/json");	
+				$this->setError("Data App is not published", "804");
+				return;
+		}
+		
+		
+		if(!$dataApp['DataApi']['is_published']){
+				$this->RequestHandler->respondAs("application/json");	
+				$this->setError("Version is not published", "834");
+				return;
+		}
+		
+		if(!$dataApp['DataApi']['is_haswadl']){
+				$this->RequestHandler->respondAs("application/json");	
+				$this->setError("WADL is not published", "835");
+				return;
+		}
+		
+		
+		$params = $this->request->query['secret'] = "";
+		$this->request->query['secret'] = $dataApp['DataApp']['secret'];
+		
+		//print_r($dataApp['DataAuth']);
+		
+		$xmlString = ' <application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://wadl.dev.java.net/2009/02 wadl.xsd"  xmlns:xsd="http://www.w3.org/2001/XMLSchema"   xmlns="http://wadl.dev.java.net/2009/02"> ';
+		
+		foreach($dataApp['DataAuth'] as $dataCollection){
+			if($dataCollection['DataCollection']['is_published']){
+				$xmlString  .= '<resources base="'.Router::fullbaseUrl() . $this->webroot. 'services/api/'. $dataApp['DataApp']['alias'] . '/'. $dataApp['DataApi']['name'] . '/' . $dataCollection['DataCollection']['alias'] . '/">';
+				
+				
+				
+				$resources = $this->Method->find('all', array('conditions' => array( 'Method.is_published' => true, 'Method.data_collection_id' => $dataCollection['DataCollection']['id']),  'group' => 'Method.alias'));
+				
+				foreach($resources as $resource){
+					$xmlString  .= '<resource path="'.$resource['Method']['alias'].'">';	
+						
+					$methods = $this->Method->find('all', array('conditions' => array( 'Method.is_published' => true, 'Method.alias' => $resource['Method']['alias'] ,  'Method.data_collection_id' => $dataCollection['DataCollection']['id'])));
+										
+					foreach ($methods as $method) {
+						$http_methods = explode(',' , $method['Method']['http_methods']);
+						foreach($http_methods as $http_method){
+							if($method['Method']['method_type_id'] == 5){
+								$methodId = 'id="' . $method['Method']['name'] .'"';
+							}else{
+								$methodId = 'description="' . $method['Method']['command'] .'"';
+							}
+							
+													
+							
+							$xmlString  .= '<method name="'.$http_method. '" ' . $methodId .'>';
+							
+							
+							
+							
+							
+								$xmlString  .= '<request><representation mediaType="application/json"/>';
+								
+								foreach($method['MethodParam'] as $methodParam){
+									if($methodParam['validation'] == 'numeric'){
+										$paramValidation = 'type="xsd:int"';
+									}else{
+										$paramValidation = 'type="xsd:string"';
+									}
+
+									if($methodParam['is_required'] == 'numeric'){
+										$paramRequired = 'required="true"';
+									}else{
+										$paramRequired = '';
+									}
+									
+									
+									$xmlString  .= '<param name="'.$methodParam['name'].'" '.$paramValidation.' style="query" '. $paramRequired .'/>';
+								}
+								
+								
+								$xmlString  .= '</request>';
+							
+							
+							
+							$xmlString  .= '<response status="200"><representation mediaType="application/json"/></response>'; 
+							$xmlString  .= '<response status="400"><representation mediaType="application/json"/></response>'; 
+							
+							
+							
+							
+							$xmlString  .= '</method>';
+						}
+					}
+					
+					
+					$xmlString  .= '</resource>';
+				
+				}
+				
+				$xmlString  .= '</resources>';
+			}
+		}
+		
+		
+		
+		$xmlString .= '</application>';
+		
+		echo $xmlString ;
+		//print_r($dataApp); 
+	}
+	
+	
 	
 	
 	
