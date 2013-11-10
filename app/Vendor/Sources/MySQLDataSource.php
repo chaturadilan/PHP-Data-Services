@@ -38,6 +38,15 @@ function dataSource_retrieveOP($provider, $dbase, $params = null) {
 		if(isset($params['id'])){
 			$preString .= " WHERE id=" . $mysqli->real_escape_string($params['id']);
 		}
+		
+		if(isset($params['identifier'])){
+			if(isset($params['id'])){
+				$preString .= " AND ";
+			}else{
+				$preString .= " WHERE ";
+			}
+			$preString .= " ". $mysqli->real_escape_string($params['identifier']['name']) ."= '" . $mysqli->real_escape_string($params['identifier']['value']) . "'";
+		}
 			
 		
 		if(isset($params['limit'])){
@@ -49,7 +58,7 @@ function dataSource_retrieveOP($provider, $dbase, $params = null) {
 		}
 		
 		$query = "SELECT * FROM " . $mysqli->real_escape_string($params['table']) . $preString . ";";		
-		//print($query);
+		//print($query);die();
 		$result = $mysqli->query($query);
 		$finalResult = array();
 		while($row = $result->fetch_array(MYSQLI_ASSOC)){
@@ -77,12 +86,17 @@ function dataSource_createOP($provider, $dbase, $params = null) {
 			
 		}
 		
+		if(isset($params['identifier'])){
+			$keys[] = 	$mysqli->real_escape_string($params['identifier']['name']);
+			$values[] = "'" . $mysqli->real_escape_string($params['identifier']['value']) . "'";		
+		}
+		
 		
 		
 		$preString = "(". implode(",", $keys) .") VALUES (" . implode(",", $values) . ")";
 		
 		$query = "INSERT INTO " . $mysqli->real_escape_string($params['table']) . $preString . ";";		
-		
+		//print($query);die();
 		return $mysqli->query($query);
 		
 	}	
@@ -106,11 +120,19 @@ function dataSource_updateOP($provider, $dbase, $params = null) {
 		
 		if(isset($params['id'])){
 			$preString .= " WHERE id=" . $mysqli->real_escape_string($params['id']);
+		}
+		
+		if(isset($params['identifier'])){
+			if(isset($params['id'])){
+				$preString .= " AND ";
+			}else{
+				$preString .= " WHERE ";
+			}
+			$preString .= " ". $mysqli->real_escape_string($params['identifier']['name']) ."= '" . $mysqli->real_escape_string($params['identifier']['value']) . "'";
 		}	
 		
 		$query = "UPDATE " . $mysqli->real_escape_string($params['table']). " SET " . $preString . " ;";		
-		
-		
+				
 		return $mysqli->query($query); //or die ("E: ".mysqli_error());
 		
 	}	
@@ -133,6 +155,15 @@ function dataSource_deleteOP($provider, $dbase, $params = null) {
 		$preString ="";				
 		if(isset($params['id'])){
 			$preString .= " WHERE id=" . $mysqli->real_escape_string($params['id']);
+		}
+		
+		if(isset($params['identifier'])){
+			if(isset($params['id'])){
+				$preString .= " AND ";
+			}else{
+				$preString .= " WHERE ";
+			}
+			$preString .= " ". $mysqli->real_escape_string($params['identifier']['name']) ."= '" . $mysqli->real_escape_string($params['identifier']['value']) . "'";
 		}
 			
 		

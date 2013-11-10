@@ -7,10 +7,11 @@ class ServicesController extends AppController {
 	 var $components = array('RequestHandler');	
 	
 	public function beforeFilter() {
-        $this->Auth->allow('data', "wadl");
+        $this->Auth->allow('data', "wadl", 'api');
     }		
 	
-	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null) {
+	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null, $isApi = false) {
+					
 			$this->autoRender = false;
 			$this->RequestHandler->respondAs(" application/json");
 			
@@ -36,7 +37,7 @@ class ServicesController extends AppController {
 			}
 			
 			
-			if(!$dataCollectionResult['DataApp']['is_public']){
+			if(!$isApi && !$dataCollectionResult['DataApp']['is_public']){
 				$this->setError("Data App is private", "803");
 				return;
 			}
@@ -108,7 +109,11 @@ class ServicesController extends AppController {
 						}
 						if(isset($params['limit'])){
 							$sentParams['limit'] = $params['limit'];
-						}						
+						}	
+
+						if(isset($params['identifier'])){
+								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
+						}					
 						
 						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
 						echo json_encode($finalResult);
@@ -120,6 +125,9 @@ class ServicesController extends AppController {
 								$sentParams['data'] = $this->request->data;
 						}		
 						
+						if(isset($params['identifier'])){
+								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
+						}	
 											
 						$status = dataSource_createOP($provider,$dBase, $sentParams);
 						
@@ -155,7 +163,11 @@ class ServicesController extends AppController {
 						
 						$sentParams = array();
 						$sentParams['table'] = $dataMethodResult['Method']['alias'];
-						$sentParams['id'] = $dataMethod;
+						$sentParams['id'] = $dataMethod;	
+						
+						if(isset($params['identifier'])){
+								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
+						}						
 						
 						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
 						echo json_encode($finalResult);
@@ -170,7 +182,10 @@ class ServicesController extends AppController {
 								$sentParams['data'] = $this->request->data;
 						}			
 						
-						
+						if(isset($params['identifier'])){
+								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
+						}	
+
 						$status = dataSource_updateOP($provider,$dBase, $sentParams);
 						
 						if($status){
@@ -184,7 +199,11 @@ class ServicesController extends AppController {
 						
 						$sentParams = array();
 						$sentParams['table'] = $dataMethodResult['Method']['alias'];
-						$sentParams['id'] = $dataMethod;						
+						$sentParams['id'] = $dataMethod;	
+						
+						if(isset($params['identifier'])){
+								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
+						}						
 						
 						$status = dataSource_deleteOP($provider,$dBase, $sentParams);
 						
@@ -348,7 +367,7 @@ class ServicesController extends AppController {
 	public function wadl($dataApp){
 		
 		$this->autoRender = false;
-		$this->RequestHandler->respondAs("text/xml");
+		$this->RequestHandler->respondAs("application/xml");
 		
 		if(!$dataApp){
 				$this->RequestHandler->respondAs("application/json");	
@@ -374,6 +393,19 @@ class ServicesController extends AppController {
 				$this->setError("Data App is not published", "804");
 				return;
 		}
+		$params = $this->request->query;
+		if(!isset($params['secret'])){
+			
+				$this->RequestHandler->respondAs("application/json");
+				$this->setError("No Secret Key Defined", "805");
+				return;
+			}
+			
+			if($dataApp['DataApp']['secret'] != $params['secret']){
+				$this->RequestHandler->respondAs("application/json");
+				$this->setError("Invalid Secret Key", "806");
+				return;
+			}
 		
 		$xmlString = ' <application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://wadl.dev.java.net/2009/02 wadl.xsd"  xmlns:xsd="http://www.w3.org/2001/XMLSchema"   xmlns="http://wadl.dev.java.net/2009/02"> ';
 		
@@ -457,6 +489,85 @@ class ServicesController extends AppController {
 		echo $xmlString ;
 		//print_r($dataApp); 
 	}
+
+
+
+
+	public function api($dataApp = null, $version = null, $dataCollection = null, $alias = null, $dataMethod = null) {
+				
+			$this->autoRender = false;
+			//$this->RequestHandler->respondAs(" application/json");	
+			
+				
+			if(!$dataApp){
+				$this->setError("Data App is required", "800");
+				return;
+			}
+			if(!$version){
+				$this->setError("Data Version is required", "820");
+				return;
+			} 
+			
+						
+   			$this->loadModel('DataApi');
+			$this->loadModel('DataAuth');
+			$dataApi = $this->DataApi->find('first', array('conditions' => array('DataApp.alias' => $dataApp, 'DataApi.name' => $version)));
+			
+			
+			if(!$dataApi){
+				$this->setError("Invalid Service", "802");
+				return;
+			}
+			
+			$dataAuth = $this->DataAuth->find('first', array('conditions' => array('DataCollection.alias' => $dataCollection, 'DataApi.id' => $dataApi['DataApi']['id'])));
+			
+			if(!$dataAuth){
+				$this->setError("Invalid Service", "802");
+				return;
+			}
+			
+			switch($dataAuth['DataAuth']['auth_type']){
+				case 'private':
+					$this->setError("This Service is Private", "821");
+					return;
+					break;
+				case 'public':
+					$this->request->query['secret'] = ""; 	
+					 $this->request->query['secret'] = $dataApi['DataApp']['secret'];
+					break;
+				case 'secret':
+					if(!isset($this->request->query['secret'])){
+						$this->setError("No Secret Key Defined", "805");
+						return;
+					}
+					
+					if($dataAuth['DataAuth']['secret'] != $this->request->query['secret']){
+						$this->setError("Invalid Secret Key", "806");
+						return;
+					}
+					
+					$this->request->query['secret'] = $dataApi['DataApp']['secret'];
+					break;
+				case 'social':
+					session_start();			
+					if(!isset($_SESSION['AUTH-USERDATA-' . $dataAuth['DataAuth']['auth_app']])){
+						$this->setError("Social Authentication Failed", "830");
+						return;
+					}
+					$this->request->query['identifier_value'] = "";
+					$this->request->query['identifier_value'] = ($_SESSION['AUTH-USERDATA-' . $dataAuth['DataAuth']['auth_app']]['id']);				
+					$this->request->query['secret'] = ""; 
+					$this->request->query['identifier'] = "";					 
+					$this->request->query['identifier'] = $dataAuth['DataAuth']['identifier'];	
+					$this->request->query['secret'] = $dataApi['DataApp']['secret'];		
+			}
+			
+			
+			
+			$this->data($dataApp, $dataCollection, $alias, $dataMethod, true);
+	
+	}
+	
 	
 	
 	private function setError($message, $code){
