@@ -133,7 +133,7 @@ function dataSource_updateOP($provider, $dbase, $params = null) {
 		
 		$query = "UPDATE " . $mysqli->real_escape_string($params['table']). " SET " . $preString . " ;";		
 				
-		return $mysqli->query($query); //or die ("E: ".mysqli_error());
+		return $mysqli->query($query); //or die ("E: ".mysqli_error()); 
 		
 	}	
 	mysqli_close($mysqli);

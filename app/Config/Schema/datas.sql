@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 09, 2013 at 05:14 PM
+-- Generation Time: Nov 10, 2013 at 07:44 AM
 -- Server version: 5.6.12
 -- PHP Version: 5.5.3
 
@@ -21,6 +21,30 @@ SET time_zone = "+00:00";
 --
 CREATE DATABASE IF NOT EXISTS `datas` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `datas`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `data_apis`
+--
+
+CREATE TABLE IF NOT EXISTS `data_apis` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `data_app_id` varchar(100) NOT NULL,
+  `is_published` tinyint(1) NOT NULL,
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Dumping data for table `data_apis`
+--
+
+INSERT INTO `data_apis` (`id`, `name`, `description`, `data_app_id`, `is_published`, `created`, `modified`) VALUES
+(2, 'V1', 'Version `', '1', 1, '2013-11-10 03:22:43', '2013-11-10 03:22:43');
 
 -- --------------------------------------------------------
 
@@ -49,6 +73,32 @@ INSERT INTO `data_apps` (`id`, `alias`, `name`, `description`, `secret`, `is_pub
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `data_auths`
+--
+
+CREATE TABLE IF NOT EXISTS `data_auths` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `data_api_id` int(11) NOT NULL,
+  `data_collection_id` int(11) NOT NULL,
+  `secret` varchar(255) NOT NULL,
+  `auth_type` varchar(255) NOT NULL,
+  `auth_app` varchar(255) NOT NULL,
+  `identifier` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=17 ;
+
+--
+-- Dumping data for table `data_auths`
+--
+
+INSERT INTO `data_auths` (`id`, `data_api_id`, `data_collection_id`, `secret`, `auth_type`, `auth_app`, `identifier`) VALUES
+(14, 2, 1, '23244', 'social', 'auth1', 'user_id'),
+(15, 2, 3, '', 'private', '', ''),
+(16, 2, 4, '', 'private', '', '');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `data_collections`
 --
 
@@ -62,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `data_collections` (
   `data_app_id` int(11) NOT NULL,
   `is_published` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`,`data_app_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Dumping data for table `data_collections`
@@ -72,7 +122,7 @@ INSERT INTO `data_collections` (`id`, `name`, `alias`, `description`, `data_prov
 (1, 'CD Collections', 'cd-col', 'CD COL', 1, 'cdcol', 1, 1),
 (2, 'T', 'rw', 'ffff', 1, '0', 3, 0),
 (3, 'Notification', 'notification', 'Notification Table', 1, 'wso2mobile-mdm', 1, 0),
-(4, 'Logs', 'logs', 'MDM-Logs', 1, 'mdm-log', 1, 1);
+(4, 'Logs', 'logs', 'MDM-Logs', 1, 'mdm-log', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -113,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `methods` (
   `method_type_id` int(11) NOT NULL,
   `is_published` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`,`data_collection_id`,`method_type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=63 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=65 ;
 
 --
 -- Dumping data for table `methods`
@@ -126,7 +176,6 @@ INSERT INTO `methods` (`id`, `name`, `alias`, `description`, `command`, `http_me
 (49, 'features_retrieve', 'features', 'features', 'retrieve', 'GET', 3, 2, 1),
 (50, 'featuretype_retrieve', 'featuretype', 'featuretype', 'retrieve', 'GET', 3, 2, 1),
 (51, 'platforms_retrieve', 'platforms', 'platforms', 'retrieve', 'GET', 3, 2, 1),
-(54, 'featuregroup_retrieve', 'featuregroup', 'featuregroup', 'retrieve', 'GET', 3, 2, 1),
 (55, 'cds_delete', 'cds', 'cds', 'delete', 'DELETE', 1, 4, 1),
 (56, 'Notifications_create', 'Notifications', 'Notifications', 'create', 'POST', 4, 1, 1),
 (57, 'Notifications_retrieve', 'Notifications', 'Notifications', 'retrieve', 'GET', 4, 2, 1),
@@ -134,7 +183,9 @@ INSERT INTO `methods` (`id`, `name`, `alias`, `description`, `command`, `http_me
 (59, 'Notifications_delete', 'Notifications', 'Notifications', 'delete', 'DELETE', 4, 4, 1),
 (60, 'cds_retrieve', 'cds', 'cds', 'retrieve', 'GET', 1, 2, 1),
 (61, 'insertCD', 'cbs', 'insert a CD', 'INSERT INTO `cdcol`.`cds` (`titel`, `interpret`, `jahr`, `id`) VALUES ({{title}}, {{title2}}, {{title3}},   NULL);', 'GET,POST', 1, 5, 1),
-(62, 'permissions_retrieve', 'permissions', 'permissions', 'retrieve', 'GET', 3, 2, 1);
+(62, 'permissions_retrieve', 'permissions', 'permissions', 'retrieve', 'GET', 3, 2, 1),
+(63, 'featuregroup_retrieve', 'featuregroup', 'featuregroup', 'retrieve', 'GET', 3, 2, 1),
+(64, 'cds_update', 'cds', 'cds', 'update', 'PUT', 1, 3, 1);
 
 -- --------------------------------------------------------
 
