@@ -1,6 +1,5 @@
 # User specific & automatically generated files #
 #################################################
-/app/Config/database.php
 /app/tmp
 /lib/Cake/Console/Templates/skel/tmp/
 /plugins
@@ -8,6 +7,7 @@
 /build
 /dist
 /tags
+/app/webroot/auth
 
 # OS generated files #
 ######################
