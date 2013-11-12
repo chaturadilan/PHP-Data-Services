@@ -73,13 +73,17 @@ class MethodsController extends AppController {
 				
 				if(!$id) $id = $this->Method->getLastInsertID();
 				
+				
+				
 				$command = $this->request->data['Method']['command'];
 				$inputParams = preg_match_all('/(?<={{)[^}]+(?=}})/', $command, $m) ? $m[0] : Array();
 				$inputParams = array_unique($inputParams);
 				
 				foreach($inputParams as $inputParam){
-					$methodParam = $this->Method->MethodParam->findByName($inputParam);
+					$methodParam = $this->Method->MethodParam->find('first', array('conditions' => array('MethodParam.name' => $inputParam, 'MethodParam.method_id' => $id )));
+								
 					if(!$methodParam){
+						
 						$this->Method->MethodParam->create();					
 						$this->Method->MethodParam->save(array('name' => $inputParam, 'description' => $inputParam,  'method_id' => $id ));	
 					}

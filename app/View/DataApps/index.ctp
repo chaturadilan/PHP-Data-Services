@@ -20,7 +20,7 @@
 				<th>Alias</th>
 				<th>Description</th>
 				<th>Published</th>
-				<th>Public</th>
+				<th>Sandbox Mode</th>
 				<th>Actions</th>				
 			</tr>
 		</thead>
