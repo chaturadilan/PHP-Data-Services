@@ -25,7 +25,7 @@ class ServicesController extends AppController {
 	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null, $isApi = false) {
 					
 			$this->autoRender = false;
-			$this->RequestHandler->respondAs(" application/json");
+			$this->RequestHandler->respondAs(" application/json; charset=utf-8");
 			
 			if(!$dataApp){
 				$this->setError("Data App is required", "800");
@@ -128,7 +128,7 @@ class ServicesController extends AppController {
 						}					
 						
 						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
-						echo json_encode($finalResult);
+						echo $this->unicode_escape_sequences($finalResult);
 						break;
 					
 					case 'create' :
@@ -182,7 +182,7 @@ class ServicesController extends AppController {
 						}						
 						
 						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
-						echo json_encode($finalResult);
+						echo $this->unicode_escape_sequences($finalResult);
 						break;
 						
 					case 'update' :
@@ -347,7 +347,7 @@ class ServicesController extends AppController {
 						App::import('Vendor', 'Sources/'. $sourceName .'DataSource');	
 						$result = dataSource_customOP($provider,$dBase, $sentParams);
 						if(is_array($result)){
-							echo json_encode($result);
+							echo $this->unicode_escape_sequences($result);
 						}else{
 							if($result){
 							$this->setRes("Operation success!", "809");
@@ -722,7 +722,10 @@ class ServicesController extends AppController {
 	
 	
 	
-	
+	private function unicode_escape_sequences($str){ 		
+		return preg_replace('/\\\u([0-9a-z]{4})/', '&#x$1;', json_encode($str));
+		
+	}
 	
 	private function setError($message, $code){
 		echo '{"message": "'. $message . '", "code": "'. $code . '"}';

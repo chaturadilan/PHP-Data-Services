@@ -71,9 +71,10 @@ function dataSource_retrieveOP($provider, $dbase, $params = null) {
 		
 		$query = "SELECT * FROM " . $mysqli->real_escape_string($params['table']) . $preString . ";";		
 		//print($query);die();
+		$mysqli->set_charset("utf8");
 		$result = $mysqli->query($query);
 		$finalResult = array();
-		while($row = $result->fetch_array(MYSQLI_ASSOC)){
+		while($row = $result->fetch_array(MYSQLI_ASSOC)){			
 			$finalResult[] = $row;
 		}
 		return $finalResult;	
