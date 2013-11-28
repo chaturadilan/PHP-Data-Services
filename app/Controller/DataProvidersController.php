@@ -60,7 +60,7 @@ public function index() {
 	public function find_source_by_id($id) {		
 		$items =  $this->DataProvider->SourceType->findById($id);
 		$this->autoRender = false;
-   		header('Content-Type: application/json');
+   		header('Content-Type: text/html');
 		echo json_encode($items);		
 	}
 	
