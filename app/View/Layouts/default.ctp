@@ -37,7 +37,7 @@
 							<?php echo $this->Html->link('Users',  array( 'controller' => 'users',  'action' => 'index'),  array('escape' => false)); ?>
 						</li>
 						<li class="<?php echo $this->params['controller'] == "source_types"? "active" : "" ?>">						
-							<?php echo $this->Html->link('Source Types',  array( 'controller' => 'source_types',  'action' => 'index'),  array('escape' => false)); ?>
+							<?php //echo $this->Html->link('Source Types',  array( 'controller' => 'source_types',  'action' => 'index'),  array('escape' => false)); ?>
 						</li>
 									
 					</ul>	
