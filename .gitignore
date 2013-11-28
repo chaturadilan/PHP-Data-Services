@@ -7,7 +7,6 @@
 /build
 /dist
 /tags
-/app/webroot/auth
 
 # OS generated files #
 ######################
