@@ -51,7 +51,20 @@
 		<?php echo $this -> Form -> input('is_published', array('class' => 'form-control form-input', 'label' => false)); ?>
 	</div>
 </div>
+
+  <div class="form-group">
+	<label class="col-sm-2 control-label">Enable Analytics:</label>
+	<div class="col-sm-10">
+		<?php echo $this -> Form -> input('is_hasanalytics', array('class' => 'form-control form-input', 'label' => false)); ?>
+	</div>
+</div>
   
+  <div class="form-group">
+    <label class="col-sm-2 control-label">Google Analythics ID:</label>
+    <div class="col-sm-10">
+      <?php echo $this->Form->input('analythicsid', array('class' => 'form-control form-input', 'label' => false)); ?>
+    </div>
+  </div> 
   
   
  <hr>
@@ -62,4 +75,31 @@
   </div>
   
 <?php echo $this->Form->end(); ?>
+
+
+<?php $this -> startIfEmpty('script'); ?>
+<script>
+	
+	$(document).ready(function() {		
+		
+		if($('#DataApiIsHasanalytics').is(':checked')){
+			$('#DataApiAnalythicsid').parent().parent().parent().show();
+		}else{
+			$('#DataApiAnalythicsid').parent().parent().parent().hide();
+		} 		
+		
+	});
+	
+	
+	$( "#DataApiIsHasanalytics" ).change(function() {			
+		if($('#DataApiIsHasanalytics').is(':checked')){
+			$('#DataApiAnalythicsid').parent().parent().parent().show();
+		}else{
+			$('#DataApiAnalythicsid').parent().parent().parent().hide();
+		}
+	});
+	
+	
+</script>
+<?php $this -> end(); ?>
 
