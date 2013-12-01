@@ -621,7 +621,7 @@ class ServicesController extends AppController {
 					$data['dh'] = $_SERVER['HTTP_HOST']; // The domain of the site that is associated with the Google Analytics ID				
 					$data['dr'] = $_SERVER['HTTP_HOST']; // The URL of the site that is sending the visit. Format: http%3A%2F%2Fexample.com
 					$data['dp'] = Router::url( $this->here, true ); // The page that will receive the pageview
-					$data['dt'] = $dataCollectionResult['DataApp']['name'] . " -> " . $dataCollectionResult['DataCollection']['name'] . " -> " . $dataApi['DataApi']['name']; // The title of the page that receives the pageview. In my case, this is a "virtual" page. So, I'm passing the title through the URL.
+					$data['dt'] = $dataCollectionResult['DataApp']['name'] . " -> " . $dataApi['DataApi']['name'] . " -> " . $dataCollectionResult['DataCollection']['name'] . " -> [" . $_SERVER['REQUEST_METHOD'] . "]"; // The title of the page that receives the pageview. In my case, this is a "virtual" page. So, I'm passing the title through the URL.
 					$data['cs'] = $dataCollectionResult['DataApp']['alias'] . "/" . $dataApi['DataApi']['name']; // The source of the visit (e.g. google)
 					$data['cm'] = $_SERVER['REQUEST_METHOD']; // The medium (e.g. cpc)
 					$data['cn'] = $dataCollectionResult['DataApp']['name']; // The name of the campaign
