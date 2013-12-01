@@ -624,7 +624,7 @@ class ServicesController extends AppController {
 					$data['dt'] = $dataCollectionResult['DataApp']['name'] . " -> " . $dataApi['DataApi']['name'] . " -> " . $dataCollectionResult['DataCollection']['name'] . " -> [" . $_SERVER['REQUEST_METHOD'] . "]"; // The title of the page that receives the pageview. In my case, this is a "virtual" page. So, I'm passing the title through the URL.
 					$data['cs'] = $dataCollectionResult['DataApp']['alias'] . "/" . $dataApi['DataApi']['name']; // The source of the visit (e.g. google)
 					$data['cm'] = $_SERVER['REQUEST_METHOD']; // The medium (e.g. cpc)
-					$data['cn'] = $dataCollectionResult['DataApp']['name']; // The name of the campaign
+					$data['cn'] = $dataCollectionResult['DataApp']['name']; // The name of the campaign					
 					//$data['ck'] = (isset($_REQUEST['utm_term']) ? $_REQUEST['utm_term'] : ""); // The keyword that the user searched for
 					//$data['cc'] = (isset($_REQUEST['utm_content']) ? $_REQUEST['utm_content'] : ""); // Used to differentiate ads or links that point to the same URL.
 					//print_r($data); die();
@@ -633,7 +633,7 @@ class ServicesController extends AppController {
 					$content = utf8_encode($content); // The payload must be UTF-8 encoded.
 					$user_agent = $_SERVER['HTTP_USER_AGENT']; 	
 					$ch = curl_init();
-					curl_setopt($ch,CURLOPT_USERAGENT, $user_agent);
+					curl_setopt($ch,CURLOPT_USERAGENT, $user_agent);					
 					curl_setopt($ch, CURLOPT_URL, $url);
 					curl_setopt($ch,CURLOPT_HTTPHEADER,array('Content-type: application/x-www-form-urlencoded'));
 					curl_setopt($ch,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
@@ -789,8 +789,9 @@ class ServicesController extends AppController {
 	
 	
 	
-	private function unicode_escape_sequences($str){ 		
-		return preg_replace('/\\\u([0-9a-z]{4})/', '&#x$1;', json_encode($str));
+	private function unicode_escape_sequences($str){
+		return json_encode($str);	 		
+		//return preg_replace('/\\\u([0-9a-z]{4})/', '&#x$1;', json_encode($str));
 		
 	}
 	
