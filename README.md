@@ -5,7 +5,10 @@ Developed by Chatura Dilan Perera
 
 Released under MIT Licence
 
-A Complete Tutorial can be found here http://technotes.dilan.me/?p=36
+A Complete Tutorial can be found here
+http://technotes.dilan.me/?p=116
+http://technotes.dilan.me/?p=185
+http://technotes.dilan.me/?p=220
 
 What is PHP Data Services and API Manager Framework (PHPDS)?
 --------------
