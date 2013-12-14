@@ -35,6 +35,7 @@
 				<th>Description</th>				
 				<th>Published</th>
 				<th>Has WADL</th>
+				<th>Enable Analythic</th>
 				<th>Actions</th>
 			</tr>
 		</thead>
@@ -45,6 +46,7 @@
 						<td><?php echo $item['DataApi']['description']; ?></td>
 						<td class="text-center"><?php echo $item['DataApi']['is_published']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="text-center"><?php echo $item['DataApi']['is_haswadl']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
+						<td class="text-center"><?php echo $item['DataApi']['is_hasanalytics']? "<i class='fa fa-check'></i>":"<i class='fa fa-times'></i>"; ?></td>
 						<td class="center">
 							<?php echo $this -> Html -> link('<i class="fa fa-eye"></i> Go Into &nbsp;', array('controller' => 'data_auths', $item['DataApi']['id']), array('escape' => false)); ?>							
 							<?php echo $this -> Html -> link('<i class="fa fa-gavel"></i> WADL &nbsp;', '/services/wadl/' . $item['DataApp']['alias'] . '/' .$item['DataApi']['name'] , array('escape' => false, 'target' => '_blank')); ?>	

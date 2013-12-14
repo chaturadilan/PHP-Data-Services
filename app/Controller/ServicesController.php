@@ -22,7 +22,7 @@ class ServicesController extends AppController {
         $this->Auth->allow('data', "wadl_private", "wadl", 'api');
     }		
 	
-	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null, $isApi = false) {
+	public function data($dataApp = null, $dataCollection = null, $alias = null, $dataMethod = null, $isApi = false, $dataApi = null) {
 					
 			$this->autoRender = false;
 			$this->RequestHandler->respondAs(" application/json; charset=utf-8");
@@ -126,7 +126,7 @@ class ServicesController extends AppController {
 						if(isset($params['identifier'])){
 								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
 						}					
-						
+						$this->beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi);
 						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
 						echo $this->unicode_escape_sequences($finalResult);
 						break;
@@ -140,7 +140,7 @@ class ServicesController extends AppController {
 						if(isset($params['identifier'])){
 								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
 						}	
-											
+						$this->beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi);					
 						$status = dataSource_createOP($provider,$dBase, $sentParams);
 						
 						if($status){
@@ -179,8 +179,9 @@ class ServicesController extends AppController {
 						
 						if(isset($params['identifier'])){
 								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
-						}						
-						
+						}
+												
+						$this->beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi);
 						$finalResult = dataSource_retrieveOP($provider,$dBase, $sentParams);
 						echo $this->unicode_escape_sequences($finalResult);
 						break;
@@ -196,8 +197,9 @@ class ServicesController extends AppController {
 						
 						if(isset($params['identifier'])){
 								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
-						}	
-
+						}
+	
+						$this->beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi);
 						$status = dataSource_updateOP($provider,$dBase, $sentParams);
 						
 						if($status){
@@ -217,6 +219,7 @@ class ServicesController extends AppController {
 								$sentParams['identifier'] = array('name' => $params['identifier'], 'value' => $params['identifier_value']);
 						}						
 						
+						$this->beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi);
 						$status = dataSource_deleteOP($provider,$dBase, $sentParams);
 						
 						if($status){
@@ -344,7 +347,9 @@ class ServicesController extends AppController {
 						$provider = $dataCollectionResult['DataProvider']["params"];
 						$dBase = $dataCollectionResult['DataCollection']['dbname'];	
 							
-						App::import('Vendor', 'Sources/'. $sourceName .'DataSource');	
+						App::import('Vendor', 'Sources/'. $sourceName .'DataSource');
+						
+						$this->beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi);	
 						$result = dataSource_customOP($provider,$dBase, $sentParams);
 						if(is_array($result)){
 							echo $this->unicode_escape_sequences($result);
@@ -576,10 +581,72 @@ class ServicesController extends AppController {
 			
 			
 			
-			$this->data($dataApp, $dataCollection, $alias, $dataMethod, true);
+			$this->data($dataApp, $dataCollection, $alias, $dataMethod, true, $dataApi);
 	
 	}
 	
+	
+	public function gen_uuid() { // Generates a UUID. A UUID is required for the measurement protocol.
+	  return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+	    // 32 bits for "time_low"
+	    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+	    // 16 bits for "time_mid"
+	    mt_rand( 0, 0xffff ),
+	    // 16 bits for "time_hi_and_version",
+	    // four most significant bits holds version number 4
+	    mt_rand( 0, 0x0fff ) | 0x4000,
+	    // 16 bits, 8 bits for "clk_seq_hi_res",
+	    // 8 bits for "clk_seq_low",
+	    // two most significant bits holds zero and one for variant DCE1.1
+	    mt_rand( 0, 0x3fff ) | 0x8000,
+	    // 48 bits for "node"
+	    mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+	  );
+	}
+	
+	
+	public function beforeDataSource($dataCollectionResult, $dataMethodResult, $dataApi = null){
+					
+					
+				if($dataApi['DataApi']['is_hasanalytics'] && $dataApi['DataApi']['analythicsid'] != ""){
+						
+						$data = array( // This is an associative array that will contain all the parameters that we'll send to Google Analytics
+					  'v' => 1, // The version of the measurement protocol
+					  'tid' => $dataApi['DataApi']['analythicsid'], // Google Analytics account ID (UA-98765432-1)
+					  'cid' => $this->gen_uuid(), // The UUID
+					  't' => 'pageview' // Hit Type
+					);	
+					//print_r($dataApi['DataApi']);	
+					//die();
+					$data['dh'] = $_SERVER['HTTP_HOST']; // The domain of the site that is associated with the Google Analytics ID				
+					$data['dr'] = $_SERVER['HTTP_HOST']; // The URL of the site that is sending the visit. Format: http%3A%2F%2Fexample.com
+					$data['dp'] = Router::url( $this->here, true ); // The page that will receive the pageview
+					$data['dt'] = $dataCollectionResult['DataApp']['name'] . " -> " . $dataApi['DataApi']['name'] . " -> " . $dataCollectionResult['DataCollection']['name'] . " -> [" . $_SERVER['REQUEST_METHOD'] . "]"; // The title of the page that receives the pageview. In my case, this is a "virtual" page. So, I'm passing the title through the URL.
+					$data['cs'] = $dataCollectionResult['DataApp']['alias'] . "/" . $dataApi['DataApi']['name']; // The source of the visit (e.g. google)
+					$data['cm'] = $_SERVER['REQUEST_METHOD']; // The medium (e.g. cpc)
+					$data['cn'] = $dataCollectionResult['DataApp']['name']; // The name of the campaign					
+					//$data['ck'] = (isset($_REQUEST['utm_term']) ? $_REQUEST['utm_term'] : ""); // The keyword that the user searched for
+					//$data['cc'] = (isset($_REQUEST['utm_content']) ? $_REQUEST['utm_content'] : ""); // Used to differentiate ads or links that point to the same URL.
+					//print_r($data); die();
+					$url = 'http://www.google-analytics.com/collect'; // This is the URL to which we'll be sending the post request.
+					$content = http_build_query($data); // The body of the post must include exactly 1 URI encoded payload and must be no longer than 8192 bytes. See http_build_query.
+					$content = utf8_encode($content); // The payload must be UTF-8 encoded.
+					$user_agent = $_SERVER['HTTP_USER_AGENT']; 	
+					$ch = curl_init();
+					curl_setopt($ch,CURLOPT_USERAGENT, $user_agent);					
+					curl_setopt($ch, CURLOPT_URL, $url);
+					curl_setopt($ch,CURLOPT_HTTPHEADER,array('Content-type: application/x-www-form-urlencoded'));
+					curl_setopt($ch,CURLOPT_HTTP_VERSION,CURL_HTTP_VERSION_1_1);
+					curl_setopt($ch,CURLOPT_POST, TRUE);
+					curl_setopt($ch,CURLOPT_POSTFIELDS, $content);
+					curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+					curl_exec($ch);
+					curl_close($ch);				
+				
+			    }	
+		
+				
+	}
 	
 	
 	public function wadl($dataApp = null, $version = null){
@@ -722,8 +789,9 @@ class ServicesController extends AppController {
 	
 	
 	
-	private function unicode_escape_sequences($str){ 		
-		return preg_replace('/\\\u([0-9a-z]{4})/', '&#x$1;', json_encode($str));
+	private function unicode_escape_sequences($str){
+		return json_encode($str);	 		
+		//return preg_replace('/\\\u([0-9a-z]{4})/', '&#x$1;', json_encode($str));
 		
 	}
 	

@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS `data_apis` (
   `data_app_id` varchar(100) NOT NULL,
   `is_published` tinyint(1) NOT NULL,
   `is_haswadl` tinyint(1) NOT NULL,
+  `is_hasanalytics` tinyint(1) NOT NULL,
+  `analythicsid` varchar(100) NOT NULL,
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL,
   PRIMARY KEY (`id`)
