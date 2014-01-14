@@ -38,6 +38,8 @@ class ServicesController extends AppController {
           
 		  	$params = $this->request->query;
 			
+			
+			
    			$this->loadModel('DataCollection');
 			$this->loadModel('Method');
 			$dataCollectionResult = $this->DataCollection->find('first', array('recursive' => 3, 'conditions' => array('DataApp.alias' => $dataApp, 'DataCollection.alias' => $dataCollection)));
@@ -579,7 +581,7 @@ class ServicesController extends AppController {
 					$this->request->query['secret'] = $dataApi['DataApp']['secret'];		
 			}
 			
-			
+			//print_r($this->request); die();
 			
 			$this->data($dataApp, $dataCollection, $alias, $dataMethod, true, $dataApi);
 	
