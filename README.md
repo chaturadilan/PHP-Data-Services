@@ -3,6 +3,8 @@ http://chaturadilan.github.io/PHP-Data-Services/
 
 Developed by Chatura Dilan Perera
 
+<b>If you need any support please contact me thought social networks from this page http://www.dilan.me</b>
+
 Released under MIT Licence
 
 A Complete Tutorial can be found here
